@@ -1,6 +1,5 @@
 require 'spec_helper'
 
-
 module Firebrew::AmoApi
   describe Firebrew::AmoApi::Search do
     subject{Search.fetch self.params}
