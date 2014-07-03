@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- The generic AMO API 1.5: Search API result. This result is empty. -->
+<!-- url: https://services.addons.mozilla.org/ja/firefox/api/1.5/search/hoge -->
+<searchresults total_results="0"></searchresults>
