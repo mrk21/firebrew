@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- The generic AMO API 1.5: Search API result. This result is minimum structure. -->
+<!-- url: https://services.addons.mozilla.org/ja/firefox/api/1.5/search/hoge -->
+<searchresults total_results="1">
+  <addon id="100">
+    <name>hoge</name>
+    <guid>hoge-ja@example.org</guid>
+    <version>10.0</version>
+    <install hash="sha256:57d1d245faafe6026b5ac79558b98a82761446c026ed5b0b22304114366f1bb1" os="ALL" size="448"
+      >https://addons.mozilla.org/firefox/downloads/file/2000/hoge.xpi?src=api</install>
+  </addon>
+</searchresults>

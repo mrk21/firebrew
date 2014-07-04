@@ -1,5 +1,6 @@
 require 'active_resource'
 require 'uri'
+require 'firebrew/firefox/basic_extension'
 
 module Firebrew::AmoApi
   class Search < ActiveResource::Base
@@ -7,7 +8,8 @@ module Firebrew::AmoApi
       include ActiveResource::Formats::XmlFormat
       
       def decode(xml)
-        super(xml)['addon']
+        results = super(xml)['addon'] || []
+        results.instance_of?(Array) ? results : [results]
       end
     end
     
@@ -28,6 +30,15 @@ module Firebrew::AmoApi
     
     def self.fetch(params={})
       self.find(:all, from: self.path(params))
+    end
+    
+    def extension
+      Firebrew::Firefox::BasicExtension.new(
+        name: self.name,
+        guid: self.guid,
+        uri: self.install,
+        version: self.version
+      )
     end
   end
 end

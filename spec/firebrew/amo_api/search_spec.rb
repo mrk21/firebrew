@@ -35,5 +35,15 @@ module Firebrew::AmoApi
       let(:fixture){'empty.xml'}
       it { expect(subject.size).to eq(0) }
     end
+    
+    context 'when results number was 1' do
+      let(:fixture){'single.xml'}
+      it { expect(subject.size).to eq(1) }
+      
+      it 'should construct objects' do
+        expect(subject[0].id).to eq('100')
+        expect(subject[0].name).to eq('hoge')
+      end
+    end
   end
 end
