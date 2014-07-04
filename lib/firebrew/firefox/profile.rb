@@ -1,5 +1,6 @@
 require 'active_model'
 require 'inifile'
+require 'firebrew/firefox/extension'
 
 module Firebrew::Firefox
   class Profile
@@ -11,7 +12,7 @@ module Firebrew::Firefox
         @data_file = params[:data_file] || 'profiles.ini'
       end
       
-      def all()
+      def all
         sections = IniFile.load(File.join @base_dir, @data_file).to_h
         profiles = sections.find_all{|(name,prop)| name.match(/^Profile\d+$/)}
         profiles.map do |(name,prop)|
@@ -30,5 +31,9 @@ module Firebrew::Firefox
     end
     
     attr_accessor :name, :path, :is_default
+    
+    def extensions
+      Extension::Manager.new(profile: self)
+    end
   end
 end
