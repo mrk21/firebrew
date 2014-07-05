@@ -36,7 +36,7 @@ module Firebrew::AmoApi
       it { expect(subject.size).to eq(0) }
     end
     
-    context 'when results number was 1' do
+    context 'when the number of results was one' do
       let(:fixture){'single.xml'}
       it { expect(subject.size).to eq(1) }
       

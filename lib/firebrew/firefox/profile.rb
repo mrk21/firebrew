@@ -10,16 +10,16 @@ module Firebrew::Firefox
       def initialize(params={})
         @base_dir = params[:base_dir]
         @data_file = params[:data_file] || 'profiles.ini'
+        raise Firebrew::Error unless File.exists? self.data_path
       end
       
       def all
-        sections = IniFile.load(File.join @base_dir, @data_file).to_h
+        sections = IniFile.load(self.data_path).to_h
         profiles = sections.find_all{|(name,prop)| name.match(/^Profile\d+$/)}
         profiles.map do |(name,prop)|
           Profile.new(
             name: prop['Name'],
-            path: prop['IsRelative'] == '1' ?
-              File.join(@base_dir, prop['Path']) : prop['Path'],
+            path: self.profile_path(prop['Path'], prop['IsRelative'] == '1'),
             is_default: prop['Default'] == '1',
           )
         end
@@ -27,6 +27,17 @@ module Firebrew::Firefox
       
       def find(name)
         self.all.find{|p| p.name == name }
+      end
+      
+      protected
+      
+      def data_path
+        File.expand_path File.join(@base_dir, @data_file)
+      end
+      
+      def profile_path(path, is_relative)
+        path = is_relative ? File.join(@base_dir, path) : path 
+        File.expand_path path
       end
     end
     

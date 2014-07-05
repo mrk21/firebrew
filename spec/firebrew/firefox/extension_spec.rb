@@ -24,7 +24,7 @@ module Firebrew::Firefox
         end
         
         it { is_expected.to be_truthy }
-        it do
+        it 'should copy the `path/to/profile/extensions/guid.xpi`' do
           path = File.join(self.instance.profile.path, 'extensions/%s.xpi' % self.extension.guid)
           expect(File.exists? path).to be_truthy
         end

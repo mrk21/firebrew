@@ -1,9 +1,10 @@
 require "firebrew/version"
 
 module Firebrew
-  # Your code goes here...
+  class Error < StandardError; end
 end
 
 require 'firebrew/amo_api/search'
 require 'firebrew/firefox/profile'
 require 'firebrew/firefox/extension'
+require 'firebrew/runner'

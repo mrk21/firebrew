@@ -13,17 +13,36 @@ module Firebrew::Firefox
       let(:base_dir){'./spec/fixtures/firefox/profile'}
       let(:data_file){'base.ini'}
       
+      context 'when "profiles.ini" not existed' do
+        subject do
+          begin
+            super()
+          rescue Firebrew::Error
+            true
+          else
+            false
+          end
+        end
+        
+        let(:base_dir){'path/to/not_existing_directory'}
+        let(:data_file){'not_found.ini'}
+        
+        it 'should throw `Firebrew::Error` exception' do
+          is_expected.to be_truthy
+        end
+      end
+      
       describe '#all()' do
         subject { super().all }
         it { expect(subject.size).to eq(3) }
         
         it 'should construct records' do
           expect(subject[0].name).to eq('default')
-          expect(subject[0].path).to eq(File.join(self.base_dir, 'Profiles/abcd.default'))
+          expect(subject[0].path).to eq(File.expand_path File.join(self.base_dir, 'Profiles/abcd.default'))
           expect(subject[0].is_default).to be_truthy
           
           expect(subject[1].name).to eq('other_profile')
-          expect(subject[1].path).to eq(File.join(self.base_dir, 'Profiles/efgh.other_profile'))
+          expect(subject[1].path).to eq(File.expand_path File.join(self.base_dir, 'Profiles/efgh.other_profile'))
           expect(subject[1].is_default).to be_falsey
           
           expect(subject[2].name).to eq('abs_profile')
