@@ -18,6 +18,7 @@ module Firebrew::AmoApi
       ActiveResource::HttpMock.reset!
     end
     
+    it { is_expected.to be_instance_of(Array) }
     it { expect(subject.size).to eq(3) }
     
     it 'should construct objects' do
@@ -33,11 +34,14 @@ module Firebrew::AmoApi
     
     context 'when results were empty' do
       let(:fixture){'empty.xml'}
+      it { is_expected.to be_instance_of(Array) }
       it { expect(subject.size).to eq(0) }
     end
     
     context 'when the number of results was one' do
       let(:fixture){'single.xml'}
+      
+      it { is_expected.to be_instance_of(Array) }
       it { expect(subject.size).to eq(1) }
       
       it 'should construct objects' do

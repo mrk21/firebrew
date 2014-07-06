@@ -16,5 +16,16 @@ module Firebrew
       result = AmoApi::Search.fetch(term: params[:package], max: 1).first
       @profile.extensions.install(result.extension)
     end
+    
+    def search(params={})
+      results = AmoApi::Search.fetch(term: params[:term])
+      if params[:is_display] then
+        results.each do |r|
+          puts r.name
+        end
+      else
+        results
+      end
+    end
   end
 end

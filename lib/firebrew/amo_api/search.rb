@@ -29,7 +29,7 @@ module Firebrew::AmoApi
     end
     
     def self.fetch(params={})
-      self.find(:all, from: self.path(params))
+      self.find(:all, from: self.path(params)).to_a
     end
     
     def extension
