@@ -12,8 +12,8 @@ module Firebrew
       @profile = @profile_manager.find(name)
     end
     
-    def install(name)
-      result = AmoApi::Search.fetch(term: name, max: 1).first
+    def install(params={})
+      result = AmoApi::Search.fetch(term: params[:package], max: 1).first
       @profile.extensions.install(result.extension)
     end
   end

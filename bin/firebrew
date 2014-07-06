@@ -2,8 +2,4 @@
 
 require 'firebrew'
 
-runner = Firebrew::Runner.new(
-  base_dir: '~/Library/Application Support/Firefox'
-)
-runner.select_profile('default')
-runner.install ARGV[0]
+Firebrew::CommandLine.new(ARGV).execute

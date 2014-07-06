@@ -1,6 +1,6 @@
 require 'spec_helper'
 
 module Firebrew
-  describe Runner do
+  describe Firebrew::Runner do
   end
 end
