@@ -17,7 +17,7 @@ module Firebrew::Firefox
         subject do
           begin
             super()
-          rescue Firebrew::Error
+          rescue Firebrew::ProfilesIniNotFoundError
             true
           else
             false
@@ -27,7 +27,7 @@ module Firebrew::Firefox
         let(:base_dir){'path/to/not_existing_directory'}
         let(:data_file){'not_found.ini'}
         
-        it 'should throw `Firebrew::Error` exception' do
+        it 'should throw `Firebrew::ProfilesIniNotFoundError` exception' do
           is_expected.to be_truthy
         end
       end
@@ -64,6 +64,30 @@ module Firebrew::Firefox
         context 'when not existed the `name` in the profiles.' do
           let(:name){'not_existing_profile_name'}
           it { is_expected.to be_nil }
+        end
+      end
+      
+      describe '#find!(name)' do
+        subject do
+          begin
+            super().find!(self.name)
+          rescue Firebrew::ProfileNotFoundError
+            true
+          else
+            false
+          end
+        end
+        
+        let(:name){'other_profile'}
+        it 'should not throw `Firebrew::ProfileNotFoundError` exception' do
+          is_expected.to be_falsey
+        end
+        
+        context 'when not existed the `name` in the profiles.' do
+          let(:name){'not_existing_profile_name'}
+          it 'should throw `Firebrew::ProfileNotFoundError` exception' do
+            is_expected.to be_truthy
+          end
         end
       end
     end

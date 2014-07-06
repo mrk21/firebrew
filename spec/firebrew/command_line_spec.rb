@@ -7,82 +7,8 @@ module Firebrew
     end
     let(:args){''}
     
-    describe '::default_global_options(platform)' do
-      subject do
-        CommandLine.default_global_options(self.platform)
-      end
-      
-      let(:platform){RUBY_PLATFORM}
-      
-      before do
-        ENV['FIREBREW_FIREFOX_PROFILE_BASE_DIR'] = nil
-        ENV['FIREBREW_FIREFOX_PROFILE'] = nil
-        ENV['FIREBREW_FIREFOX'] = nil
-      end
-      
-      context 'when the `platform` was "MacOS"' do
-        let(:platform){'x86_64-darwin13.0'}
-        it do
-          is_expected.to eq(
-            base_dir: '~/Library/Application Support/Firefox',
-            firefox: '/Applications/Firefox.app/Contents/MacOS/firefox-bin',
-            profile: 'default'
-          )
-        end
-      end
-      
-      context 'when the `platform` was "Windows"' do
-        let(:platform){'x86_64-linux'}
-        it do
-          is_expected.to eq(
-            base_dir: '~/.mozilla/firefox',
-            firefox: '/usr/bin/firefox',
-            profile: 'default'
-          )
-        end
-      end
-      
-      context 'when the `platform` was "Linux"' do
-        let(:platform){'x86_64-linux'}
-        it do
-          is_expected.to eq(
-            base_dir: '~/.mozilla/firefox',
-            firefox: '/usr/bin/firefox',
-            profile: 'default'
-          )
-        end
-      end
-      
-      context 'when the `platform` was "Windows 7 x86_64"' do
-        let(:platform){'x64-mingw32'}
-        it do
-          is_expected.to eq(
-            base_dir: '~/AppData/Roming/Mozilla/Firefox',
-            firefox: 'C:/Program Files (x86)/Mozilla Firefox/firefox.exe',
-            profile: 'default'
-          )
-        end
-      end
-      
-      context 'when set environment variables' do
-        before do
-          ENV['FIREBREW_FIREFOX_PROFILE_BASE_DIR'] = 'path/to/profile_base_directory'
-          ENV['FIREBREW_FIREFOX_PROFILE'] = 'profile-name'
-          ENV['FIREBREW_FIREFOX'] = 'path/to/firefox'
-        end
-        
-        it do
-          is_expected.to eq(
-            base_dir: 'path/to/profile_base_directory',
-            firefox: 'path/to/firefox',
-            profile: 'profile-name'
-          )
-        end
-      end
-    end
-    
-    describe 'commandline arguments parsing' do
-      subject { super().config }
+    describe '#arguments()' do
+      subject { super().arguments }
       
       describe 'install command' do
         let(:args){'install addon-name'}
@@ -90,10 +16,10 @@ module Firebrew
         it 'should parse' do
           is_expected.to eq(
             command: :install,
-            options: {
+            params: {
               term: 'addon-name'
             },
-            global_options: CommandLine.default_global_options
+            config: {}
           )
         end
         
@@ -103,12 +29,12 @@ module Firebrew
           it 'should parse' do
             is_expected.to eq(
               command: :install,
-              options: {
+              params: {
                 term: 'addon-name',
                 version: '5.4.4',
                 type: 'extension'
               },
-              global_options: {
+              config: {
                 base_dir: '/path/to/dir',
                 profile: 'test',
                 firefox: '/path/to/firefox'
@@ -141,10 +67,10 @@ module Firebrew
         it 'should parse' do
           is_expected.to eq(
             command: :uninstall,
-            options: {
+            params: {
               term: 'addon-name'
             },
-            global_options: CommandLine.default_global_options
+            config: {}
           )
         end
       end
@@ -155,11 +81,10 @@ module Firebrew
         it 'should parse' do
           is_expected.to eq(
             command: :search,
-            options: {
-              term: 'term',
-              is_display: true
+            params: {
+              term: 'term'
             },
-            global_options: CommandLine.default_global_options
+            config: {}
           )
         end
       end
@@ -169,8 +94,8 @@ module Firebrew
         it 'should parse' do
           is_expected.to eq(
             command: :list,
-            options: {},
-            global_options: CommandLine.default_global_options
+            params: {},
+            config: {}
           )
         end
       end

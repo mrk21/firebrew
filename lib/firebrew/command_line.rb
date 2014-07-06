@@ -2,40 +2,16 @@ require 'optparse'
 
 module Firebrew
   class CommandLine
-    attr_accessor :config
-    
-    def self.default_global_options(platform = RUBY_PLATFORM)
-      result = {
-        base_dir: ENV['FIREBREW_FIREFOX_PROFILE_BASE_DIR'],
-        firefox: ENV['FIREBREW_FIREFOX'],
-        profile: ENV['FIREBREW_FIREFOX_PROFILE'] || 'default',
-      }
-      
-      case platform
-      when /darwin/ then
-        result[:base_dir] ||= '~/Library/Application Support/Firefox'
-        result[:firefox] ||= '/Applications/Firefox.app/Contents/MacOS/firefox-bin'
-        
-      when /linux/ then
-        result[:base_dir] ||= '~/.mozilla/firefox'
-        result[:firefox] ||= '/usr/bin/firefox'
-        
-      when /mswin(?!ce)|mingw|cygwin|bccwin/ then
-        result[:base_dir] ||= '~/AppData/Roming/Mozilla/Firefox'
-        result[:firefox] ||= 'C:/Program Files (x86)/Mozilla Firefox/firefox.exe'
-      end
-      
-      result
-    end
+    attr_accessor :arguments
     
     def initialize(args=[])
       opt = OptionParser.new
       opt.version = Firebrew::VERSION
       
-      self.config = {
-        command: '',
-        options: {},
-        global_options: self.class.default_global_options
+      self.arguments = {
+        command: nil,
+        params: {},
+        config: {}
       }
       
       self.register_global_options(opt)
@@ -46,25 +22,24 @@ module Firebrew
         self.register_install_options(opt)
         opt.permute!(args)
         
-        self.config[:command] = :install
-        self.config[:options][:term] = args[0]
+        self.arguments[:command] = :install
+        self.arguments[:params][:term] = args[0]
         
       when 'uninstall' then
         opt.permute!(args)
-        self.config[:command] = :uninstall
-        self.config[:options][:term] = args[0]
+        self.arguments[:command] = :uninstall
+        self.arguments[:params][:term] = args[0]
         
       when 'search' then
         self.register_search_options(opt)
         opt.permute!(args)
         
-        self.config[:command] = :search
-        self.config[:options][:term] = args[0]
-        self.config[:options][:is_display] = true
+        self.arguments[:command] = :search
+        self.arguments[:params][:term] = args[0]
         
       when 'list' then
         opt.permute!(args)
-        self.config[:command] = :list
+        self.arguments[:command] = :list
         
       when nil then
         opt.permute(['--help'])
@@ -72,44 +47,52 @@ module Firebrew
     end
     
     def execute
-      runner = Runner.new(self.config[:global_options])
-      runner.select_profile(self.config[:global_options][:profile])
-      runner.send(self.config[:command], self.config[:options])
+      runner = Runner.new(self.arguments[:config])
+      
+      case self.arguments[:params]
+      when :search then
+        runner.search(self.arguments[:params]).each do |result|
+          puts result.name
+        end
+        
+      else
+        runner.send(self.arguments[:command], self.arguments[:params])
+      end
     end
     
     protected
     
     def register_global_options(opt)
       opt.on('-d path','--base-dir=path','Firefox profiles.ini directory') do |v|
-        self.config[:global_options][:base_dir] = v
+        self.arguments[:config][:base_dir] = v
       end
       
       opt.on('-p name','--profile=name','Firefox profile name') do |v|
-        self.config[:global_options][:profile] = v
+        self.arguments[:config][:profile] = v
       end
       
       opt.on('-f path','--firefox=path','Firefox command path') do |v|
-        self.config[:global_options][:firefox] = v
+        self.arguments[:config][:firefox] = v
       end
     end
     
     def register_install_options(opt)
       opt.on('-t value','--type=value','Extension type') do |v|
-        self.config[:options][:type] = v
+        self.arguments[:params][:type] = v
       end
       
       opt.on('-v value','--version=value','Extension version') do |v|
-        self.config[:options][:version] = v
+        self.arguments[:params][:version] = v
       end
     end
     
     def register_search_options(opt)
       opt.on('-t value','--type=value','Extension type') do |v|
-        self.config[:options][:type] = v
+        self.arguments[:params][:type] = v
       end
       
       opt.on('-v value','--version=value','Extension version') do |v|
-        self.config[:options][:version] = v
+        self.arguments[:params][:version] = v
       end
     end
   end

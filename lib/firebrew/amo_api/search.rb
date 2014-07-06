@@ -32,6 +32,12 @@ module Firebrew::AmoApi
       self.find(:all, from: self.path(params)).to_a
     end
     
+    def self.fetch!(params={})
+      results = self.fetch(params)
+      raise Firebrew::ExtensionNotFoundError if results.empty?
+      results
+    end
+    
     def extension
       Firebrew::Firefox::BasicExtension.new(
         name: self.name,
