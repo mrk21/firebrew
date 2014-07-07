@@ -75,6 +75,20 @@ module Firebrew
         end
       end
       
+      describe 'info command' do
+        let(:args){'info term'}
+        
+        it 'should parse' do
+          is_expected.to eq(
+            command: :info,
+            params: {
+              term: 'term'
+            },
+            config: {}
+          )
+        end
+      end
+      
       describe 'search command' do
         let(:args){'search term'}
         

@@ -30,6 +30,13 @@ module Firebrew
         self.arguments[:command] = :uninstall
         self.arguments[:params][:term] = args[0]
         
+      when 'info' then
+        self.register_info_options(opt)
+        opt.permute!(args)
+        
+        self.arguments[:command] = :info
+        self.arguments[:params][:term] = args[0]
+        
       when 'search' then
         self.register_search_options(opt)
         opt.permute!(args)
@@ -56,6 +63,10 @@ module Firebrew
           puts result.name
         end
         
+      when :info then
+        result = runner.send(self.arguments[:command], self.arguments[:params])
+        puts result.to_xml
+        
       else
         runner.send(self.arguments[:command], self.arguments[:params])
       end
@@ -78,6 +89,16 @@ module Firebrew
     end
     
     def register_install_options(opt)
+      opt.on('-t value','--type=value','Extension type') do |v|
+        self.arguments[:params][:type] = v
+      end
+      
+      opt.on('-v value','--version=value','Extension version') do |v|
+        self.arguments[:params][:version] = v
+      end
+    end
+    
+    def register_info_options(opt)
       opt.on('-t value','--type=value','Extension type') do |v|
         self.arguments[:params][:type] = v
       end

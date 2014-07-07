@@ -47,7 +47,7 @@ module Firebrew
     end
     
     def install(params={})
-      result = AmoApi::Search.fetch!(term: params[:term], max: 1).first
+      result = AmoApi::Search.fetch!(term: params[:term], max: 1, version: @firefox.version).first
       self.profile.extensions.install(result.extension)
       @firefox.update_profile
     end
@@ -57,12 +57,16 @@ module Firebrew
       @firefox.update_profile
     end
     
+    def info(params={})
+      AmoApi::Search.fetch!(term: params[:term], max: 1, version: @firefox.version).first
+    end
+    
     def list(params={})
       self.profile.extensions.all
     end
     
     def search(params={})
-      AmoApi::Search.fetch!(term: params[:term])
+      AmoApi::Search.fetch!(term: params[:term], version: @firefox.version)
     end
   end
 end
