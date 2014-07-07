@@ -1,0 +1,227 @@
+{
+  "schemaVersion": 16,
+  "addons": [
+    {
+      "id": "{972ce4c6-7e08-4474-a285-3208198ce6fd}",
+      "syncGUID": "I3nq6ifLBqr9",
+      "location": "app-global",
+      "version": "30.0",
+      "type": "theme",
+      "internalName": "classic/1.0",
+      "updateURL": null,
+      "updateKey": null,
+      "optionsURL": null,
+      "optionsType": null,
+      "aboutURL": null,
+      "iconURL": null,
+      "icon64URL": null,
+      "defaultLocale": {
+        "name": "Default",
+        "description": "The default theme.",
+        "creator": "Mozilla",
+        "homepageURL": null,
+        "contributors": [
+          "Mozilla Contributors"
+        ]
+      },
+      "visible": true,
+      "active": true,
+      "userDisabled": false,
+      "appDisabled": false,
+      "descriptor": "/Applications/Firefox.app/Contents/MacOS/browser/extensions/{972ce4c6-7e08-4474-a285-3208198ce6fd}",
+      "installDate": 1402021782000,
+      "updateDate": 1402021782000,
+      "applyBackgroundUpdates": 1,
+      "skinnable": true,
+      "size": 3504,
+      "sourceURI": null,
+      "releaseNotesURI": null,
+      "softDisabled": false,
+      "foreignInstall": false,
+      "hasBinaryComponents": false,
+      "strictCompatibility": true,
+      "locales": [
+
+      ],
+      "targetApplications": [
+        {
+          "id": "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
+          "minVersion": "30.0",
+          "maxVersion": "30.0"
+        }
+      ],
+      "targetPlatforms": [
+
+      ]
+    },
+    {
+      "id": "web2pdfextension@web2pdf.adobedotcom",
+      "syncGUID": "VaECJg81_aro",
+      "location": "app-system-local",
+      "version": "2.0",
+      "type": "extension",
+      "internalName": null,
+      "updateURL": null,
+      "updateKey": null,
+      "optionsURL": null,
+      "optionsType": null,
+      "aboutURL": null,
+      "iconURL": "chrome://web2pdfextension/skin/C_AdobeLogo_48x48.png",
+      "icon64URL": "chrome://web2pdfextension/skin/C_AdobeLogo_64x64.png",
+      "defaultLocale": {
+        "name": "Adobe Acrobat - Create PDF",
+        "description": "Converts a web page to PDF",
+        "creator": "Adobe Systems Incorporated",
+        "homepageURL": "http://www.adobe.com/"
+      },
+      "visible": true,
+      "active": false,
+      "userDisabled": true,
+      "appDisabled": false,
+      "descriptor": "/Library/Application Support/Mozilla/Extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/web2pdfextension@web2pdf.adobedotcom",
+      "installDate": 1403953198000,
+      "updateDate": 1403953198000,
+      "applyBackgroundUpdates": 1,
+      "bootstrap": false,
+      "size": 135272,
+      "sourceURI": null,
+      "releaseNotesURI": null,
+      "softDisabled": false,
+      "foreignInstall": true,
+      "hasBinaryComponents": false,
+      "strictCompatibility": false,
+      "locales": [
+
+      ],
+      "targetApplications": [
+        {
+          "id": "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
+          "minVersion": "4.0",
+          "maxVersion": "*.*"
+        }
+      ],
+      "targetPlatforms": [
+
+      ]
+    },
+    {
+      "id": "langpack-ja@firefox.mozilla.org",
+      "syncGUID": "B_Y3qm7NsEDZ",
+      "location": "app-profile",
+      "version": "30.0",
+      "type": "locale",
+      "internalName": null,
+      "updateURL": null,
+      "updateKey": null,
+      "optionsURL": null,
+      "optionsType": null,
+      "aboutURL": null,
+      "iconURL": null,
+      "icon64URL": null,
+      "defaultLocale": {
+        "name": "Japanese Language Pack",
+        "description": null,
+        "creator": "Mozilla Japanese L10N Community",
+        "homepageURL": null,
+        "contributors": [
+          "Hiroki Abe",
+          "Makoto Arai",
+          "Tomoya Asai",
+          "Hideyuki EMURA",
+          "Shaw Hosaka",
+          "Joji Ikeda",
+          "Masahiko Imanaka",
+          "Kosuke Kaizuka",
+          "Hidehiro Kozawa",
+          "Teiji Matsuba",
+          "Shigeki Narisawa",
+          "Takeshi Nishimura",
+          "Toshiyuki Oka",
+          "Atsushi Sakai",
+          "Hiroshi Sekiya",
+          "Youhei Tooyama",
+          "Satoru Yamaguchi"
+        ]
+      },
+      "visible": true,
+      "active": true,
+      "userDisabled": false,
+      "appDisabled": false,
+      "descriptor": "/Users/yuichi/Library/Application Support/Firefox/Profiles/k9l2swsk.default/extensions/langpack-ja@firefox.mozilla.org.xpi",
+      "installDate": 1404466078000,
+      "updateDate": 1404626257000,
+      "applyBackgroundUpdates": 1,
+      "bootstrap": true,
+      "size": 954430,
+      "sourceURI": null,
+      "releaseNotesURI": null,
+      "softDisabled": false,
+      "foreignInstall": false,
+      "hasBinaryComponents": false,
+      "strictCompatibility": true,
+      "locales": [
+
+      ],
+      "targetApplications": [
+        {
+          "id": "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
+          "minVersion": "30.0",
+          "maxVersion": "30.*"
+        }
+      ],
+      "targetPlatforms": [
+
+      ]
+    },
+    {
+      "id": "vimperator@mozdev.org",
+      "syncGUID": "3Z1gn5NFJXqC",
+      "location": "app-profile",
+      "version": "3.8.2",
+      "type": "extension",
+      "internalName": null,
+      "updateURL": null,
+      "updateKey": null,
+      "optionsURL": "chrome://liberator/content/preferences.xul",
+      "optionsType": null,
+      "aboutURL": null,
+      "iconURL": "chrome://vimperator/skin/icon.png",
+      "icon64URL": null,
+      "defaultLocale": {
+        "name": "Vimperator",
+        "description": "Vimperator adds an efficient, Vim-inspired user interface on top of Firefox",
+        "creator": "Martin Stubenschrott",
+        "homepageURL": "http://vimperator.org"
+      },
+      "visible": true,
+      "active": true,
+      "userDisabled": false,
+      "appDisabled": false,
+      "descriptor": "/Users/yuichi/Library/Application Support/Firefox/Profiles/k9l2swsk.default/extensions/vimperator@mozdev.org.xpi",
+      "installDate": 1404474084000,
+      "updateDate": 1404617815000,
+      "applyBackgroundUpdates": 1,
+      "bootstrap": false,
+      "size": 1509840,
+      "sourceURI": null,
+      "releaseNotesURI": null,
+      "softDisabled": false,
+      "foreignInstall": true,
+      "hasBinaryComponents": false,
+      "strictCompatibility": false,
+      "locales": [
+
+      ],
+      "targetApplications": [
+        {
+          "id": "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
+          "minVersion": "17.0",
+          "maxVersion": "30.*"
+        }
+      ],
+      "targetPlatforms": [
+
+      ]
+    }
+  ]
+}

@@ -54,26 +54,15 @@ module Firebrew::AmoApi
     end
     
     describe '::fetch!(params)' do
-      subject do
-        begin
-          Search.fetch!(self.params)
-        rescue Firebrew::ExtensionNotFoundError
-          true
-        else
-          false
-        end
-      end
+      subject {Search.fetch! self.params}
       
-      it 'should not throw `Firebrew::ExtensionNotFoundError` exception' do
-        is_expected.to be_falsey
-      end
+      it { is_expected.to be_instance_of(Array) }
+      it { expect(subject.size).to eq(3) }
+      it { expect{subject}.to_not raise_error }
       
       context 'when results were empty' do
         let(:fixture){'empty.xml'}
-        
-        it 'should not throw `Firebrew::ExtensionNotFoundError` exception' do
-          is_expected.to be_truthy
-        end
+        it { expect{subject}.to raise_error(Firebrew::ExtensionNotFoundError) }
       end
     end
   end

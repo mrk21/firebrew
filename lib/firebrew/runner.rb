@@ -31,7 +31,7 @@ module Firebrew
     end
     
     def initialize(config={})
-      self.config = self.default_config.merge(config)
+      self.config = self.class.default_config.merge(config)
       
       @profile_manager = Firefox::Profile::Manager.new(
         base_dir: self.config[:base_dir],
@@ -47,6 +47,14 @@ module Firebrew
     def install(params={})
       result = AmoApi::Search.fetch!(term: params[:term], max: 1).first
       self.profile.extensions.install(result.extension)
+    end
+    
+    def uninstall(params={})
+      self.profile.extensions.find!(params[:term]).delete
+    end
+    
+    def list(params={})
+      self.profile.extensions.all
     end
     
     def search(params={})

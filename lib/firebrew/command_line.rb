@@ -49,9 +49,10 @@ module Firebrew
     def execute
       runner = Runner.new(self.arguments[:config])
       
-      case self.arguments[:params]
-      when :search then
-        runner.search(self.arguments[:params]).each do |result|
+      case self.arguments[:command]
+      when :search, :list then
+        results = runner.send(self.arguments[:command], self.arguments[:params])
+        results.each do |result|
           puts result.name
         end
         
