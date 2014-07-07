@@ -19,7 +19,6 @@ module Firebrew
       
       case args.shift
       when 'install' then
-        self.register_install_options(opt)
         opt.permute!(args)
         
         self.arguments[:command] = :install
@@ -31,14 +30,12 @@ module Firebrew
         self.arguments[:params][:term] = args[0]
         
       when 'info' then
-        self.register_info_options(opt)
         opt.permute!(args)
         
         self.arguments[:command] = :info
         self.arguments[:params][:term] = args[0]
         
       when 'search' then
-        self.register_search_options(opt)
         opt.permute!(args)
         
         self.arguments[:command] = :search
@@ -85,36 +82,6 @@ module Firebrew
       
       opt.on('-f path','--firefox=path','Firefox command path') do |v|
         self.arguments[:config][:firefox] = v
-      end
-    end
-    
-    def register_install_options(opt)
-      opt.on('-t value','--type=value','Extension type') do |v|
-        self.arguments[:params][:type] = v
-      end
-      
-      opt.on('-v value','--version=value','Extension version') do |v|
-        self.arguments[:params][:version] = v
-      end
-    end
-    
-    def register_info_options(opt)
-      opt.on('-t value','--type=value','Extension type') do |v|
-        self.arguments[:params][:type] = v
-      end
-      
-      opt.on('-v value','--version=value','Extension version') do |v|
-        self.arguments[:params][:version] = v
-      end
-    end
-    
-    def register_search_options(opt)
-      opt.on('-t value','--type=value','Extension type') do |v|
-        self.arguments[:params][:type] = v
-      end
-      
-      opt.on('-v value','--version=value','Extension version') do |v|
-        self.arguments[:params][:version] = v
       end
     end
   end

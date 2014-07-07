@@ -24,15 +24,13 @@ module Firebrew
         end
         
         context 'with options' do
-          let(:args){'--base-dir=/path/to/dir install -p default addon-name -v 2.3 --type=extension --version=5.4.4 --profile=test --firefox=/path/to/firefox'}
+          let(:args){'--base-dir=/path/to/dir install -p default addon-name --profile=test --firefox=/path/to/firefox'}
           
           it 'should parse' do
             is_expected.to eq(
               command: :install,
               params: {
-                term: 'addon-name',
-                version: '5.4.4',
-                type: 'extension'
+                term: 'addon-name'
               },
               config: {
                 base_dir: '/path/to/dir',
@@ -44,21 +42,8 @@ module Firebrew
         end
         
         context 'with invalid options' do
-          subject do
-            begin
-              super()
-            rescue OptionParser::InvalidOption
-              true
-            else
-              false
-            end
-          end
-          
           let(:args){'install --invalid-option addon-name'}
-          
-          it 'should throw `OptionParser::InvalidOption` exception' do
-            is_expected.to be_truthy
-          end
+          it { expect{subject}.to raise_error(OptionParser::InvalidOption) }
         end
       end
       
