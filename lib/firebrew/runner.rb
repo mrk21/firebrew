@@ -37,6 +37,8 @@ module Firebrew
         base_dir: self.config[:base_dir],
         data_file: self.config[:data_file]
       )
+      @firefox = Firefox::Command.new(self.config)
+      
       self.select_profile
     end
     
@@ -47,10 +49,12 @@ module Firebrew
     def install(params={})
       result = AmoApi::Search.fetch!(term: params[:term], max: 1).first
       self.profile.extensions.install(result.extension)
+      @firefox.update_profile
     end
     
     def uninstall(params={})
       self.profile.extensions.find!(params[:term]).delete
+      @firefox.update_profile
     end
     
     def list(params={})
