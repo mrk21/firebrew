@@ -12,18 +12,18 @@ module Firebrew::Firefox
     end
     
     let(:extensions){[
-      Extension.new(
+      Extension.new({
         name: 'Japanese Language Pack',
         guid: 'langpack-ja@firefox.mozilla.org',
         version: '30.0',
         uri: './tmp/extensions/langpack-ja@firefox.mozilla.org.xpi'
-      ),
-      Extension.new(
+      }, self.manager),
+      Extension.new({
         name: 'Vimperator',
         guid: 'vimperator@mozdev.org',
         version: '3.8.2',
         uri: './tmp/extensions/vimperator@mozdev.org.xpi'
-      )
+      }, self.manager)
     ]}
     
     before do
@@ -55,7 +55,9 @@ module Firebrew::Firefox
         subject {super().find self.name}
         let(:name){self.extensions[1].name}
         
-        it { is_expected.to eq(self.extensions[1]) }
+        it 'should find' do
+          is_expected.to eq(self.extensions[1])
+        end
         
         context 'when the extension corresponding to the `name` not existed' do
           let(:name){'hoge'}
@@ -67,8 +69,10 @@ module Firebrew::Firefox
         subject {super().find! self.name}
         let(:name){self.extensions[1].name}
         
-        it { is_expected.to eq(self.extensions[1]) }
         it { expect{subject}.to_not raise_error }
+        it 'should find' do
+          is_expected.to eq(self.extensions[1])
+        end
         
         context 'when the extension corresponding to the `name` not existed' do
           let(:name){'hoge'}
@@ -77,19 +81,54 @@ module Firebrew::Firefox
       end
       
       describe '#install(extension)' do
-        subject { super().install(self.extension) }
+        before { self.instance.install(self.extension) }
         
         let(:extension) do
-          BasicExtension.new(
+          Extension.new({
             guid: 'hoge@example.org',
             uri: './spec/fixtures/amo_api/search/base.xml'
-          )
+          }, self.manager)
         end
         
-        it { is_expected.to be_truthy }
         it 'should copy the `path/to/profile/extensions/guid.xpi`' do
           path = File.join(self.instance.profile.path, 'extensions/%s.xpi' % self.extension.guid)
           expect(File.exists? path).to be_truthy
+        end
+        
+        it 'should add the `extension` extension' do
+          all = self.instance.all
+          extension = self.extension
+          extension.uri = './tmp/extensions/hoge@example.org.xpi'
+          expect(all.size).to eq(3)
+          expect(all[0]).to eq(self.extensions[0])
+          expect(all[1]).to eq(self.extensions[1])
+          expect(all[2]).to eq(self.extension)
+        end
+      end
+      
+      describe '#uninstall(extension)' do
+        let(:extension) do
+          Extension.new({
+            guid: 'hoge@example.org',
+            uri: './tmp/extensions/hoge@example.org.xpi'
+          }, self.manager)
+        end
+        
+        before do
+          FileUtils.cp('./spec/fixtures/firefox/extension/extensions_added_hoge.v16.json', './tmp/extensions.json')
+          File.write self.extension.uri, ''
+          self.manager.uninstall(self.extension)
+        end
+        
+        it 'should remove the `extension` file' do
+          expect(File.exists? self.extension.uri).to be_falsey
+        end
+        
+        it 'should remove the `extension` extension' do
+          all = self.instance.all
+          expect(all.size).to eq(2)
+          expect(all[0]).to eq(self.extensions[0])
+          expect(all[1]).to eq(self.extensions[1])
         end
       end
     end

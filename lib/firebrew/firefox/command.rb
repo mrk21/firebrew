@@ -23,9 +23,5 @@ module Firebrew::Firefox
       result = @executer.exec('%{firefox} --version' % @config)[0]
       @version = result.match(/[0-9.]+/)[0]
     end
-    
-    def update_profile
-      @executer.exec('%{firefox} -P %{profile} -silent' % @config)[0]
-    end
   end
 end

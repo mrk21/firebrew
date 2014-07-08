@@ -13,19 +13,17 @@ module Firebrew::Firefox
       end
       
       def all
-        json = JSON.load(File.read(self.data_path))
-        
-        profile_extensions = json['addons'].find_all do |extension|
+        profile_extensions = self.fetch['addons'].find_all do |extension|
           extension['location'] == 'app-profile'
         end
         
         profile_extensions.map do |extension|
-          Extension.new(
+          Extension.new({
             name: extension['defaultLocale']['name'],
             guid: extension['id'],
             version: extension['version'],
             uri: '%s.xpi' % File.join(self.profile.path, 'extensions', extension['id'])
-          )
+          }, self)
         end
       end
       
@@ -49,6 +47,15 @@ module Firebrew::Firefox
             o.write i.read
           end
         end
+        
+        self.add(extension)
+        self.push
+      end
+      
+      def uninstall(extension)
+        FileUtils.rm_f extension.uri
+        self.remove(extension)
+        self.push
       end
       
       protected
@@ -58,10 +65,40 @@ module Firebrew::Firefox
         raise Firebrew::ExtensionsFileNotFoundError unless File.exists? path
         path
       end
+      
+      def fetch
+        return @data if @data.present?
+        @data = JSON.load(File.read(self.data_path))
+      end
+      
+      def push
+        json = JSON::pretty_generate(self.fetch, allow_nan: true, max_nesting: false)
+        File.write(self.data_path, json)
+      end
+      
+      def add(extension)
+        self.fetch['addons'].push(
+          'id'=> extension.guid,
+          'location'=> 'app-profile',
+          'version'=> extension.version,
+          'defaultLocale'=> {
+            'name'=> extension.name
+          }
+        )
+      end
+      
+      def remove(extension)
+        self.fetch['addons'].delete_if{|v| v['id'] == extension.guid}
+      end
+    end
+    
+    def initialize(attributes, manager)
+      super(attributes)
+      @manager = manager
     end
     
     def delete
-      FileUtils.rm_f self.uri
+      @manager.uninstall(self)
     end
   end
 end

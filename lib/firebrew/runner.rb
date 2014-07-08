@@ -49,12 +49,10 @@ module Firebrew
     def install(params={})
       result = self.fetch_api(term: params[:term], max: 1).first
       self.profile.extensions.install(result.extension)
-      @firefox.update_profile
     end
     
     def uninstall(params={})
       self.profile.extensions.find!(params[:term]).delete
-      @firefox.update_profile
     end
     
     def info(params={})
