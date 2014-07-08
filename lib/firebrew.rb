@@ -6,6 +6,7 @@ module Firebrew
   class ProfileNotFoundError < Error; end
   class ExtensionsFileNotFoundError < Error; end
   class ExtensionNotFoundError < Error; end
+  class FirefoxCommandError < Error; end
 end
 
 require 'firebrew/entity'
