@@ -14,6 +14,10 @@ module Firebrew
     entity_attr :value3, :value4
   end
   
+  class EntityTest1Ex < EntityTest1
+    entity_attr :value5, :value6
+  end
+  
   describe Firebrew::Entity do
     describe '::attributes()' do
       describe 'EntityTest1(value1, value2)' do
@@ -22,6 +26,10 @@ module Firebrew
       
       describe 'EntityTest2(value3, value4)' do
         it { expect(EntityTest2.attributes).to eq([:value3, :value4]) }
+      end
+      
+      describe 'EntityTest1Ex(value1, value2, value5, value6)' do
+        it { expect(EntityTest1Ex.attributes).to eq([:value1, :value2, :value5, :value6]) }
       end
     end
     

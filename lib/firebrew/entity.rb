@@ -4,14 +4,21 @@ module Firebrew
       base.class_eval do
         extend ClassMethod
       end
-      base.attributes = []
     end
     
     module ClassMethod
       attr_accessor :attributes
       
+      def self.extended(base)
+        base.attributes = []
+      end
+      
+      def inherited(base)
+        base.attributes = self.attributes.clone
+      end
+      
       def entity_attr(*attrs)
-        self.attributes.push(*attrs).uniq
+        self.attributes.push(*attrs).uniq!
         attr_accessor *attrs
       end
     end
