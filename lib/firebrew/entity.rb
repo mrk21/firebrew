@@ -18,13 +18,17 @@ module Firebrew
       end
       
       def entity_attr(*attrs)
-        self.attributes.push(*attrs).uniq!
-        attr_accessor *attrs
+        attrs.uniq!
+        common = self.attributes & attrs
+        adding = attrs - common
+        self.attributes.push(*adding)
+        attr_accessor *adding
+        adding
       end
     end
     
     def ==(rop)
-      self.class.attributes.each do|attr|
+      self.class.attributes.each do |attr|
         return false unless self.send(attr) == rop.send(attr)
       end
       return true

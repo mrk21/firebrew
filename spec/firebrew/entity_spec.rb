@@ -33,6 +33,31 @@ module Firebrew
       end
     end
     
+    describe '::entity_attr(*attrs)' do
+      subject do
+        Class.new do
+          include Entity
+        end
+      end
+      
+      it 'should add the `attrs`' do
+        expect(subject.entity_attr(:attr1, :attr2)).to eq([:attr1, :attr2])
+      end
+      
+      context 'when the `attrs` was already existed' do
+        it 'should add attributes which not exist in the `::attributes`' do
+          subject.entity_attr(:attr1)
+          expect(subject.entity_attr(:attr1, :attr2)).to eq([:attr2])
+        end
+      end
+      
+      context 'when the `attrs` contain duplicate values' do
+        it 'should add attributes which not contain duplicate values' do
+          expect(subject.entity_attr(:attr1, :attr2, :attr2)).to eq([:attr1, :attr2])
+        end
+      end
+    end
+    
     describe '#==(rop)' do
       context 'when `self` equaled `rop`' do
         it do
