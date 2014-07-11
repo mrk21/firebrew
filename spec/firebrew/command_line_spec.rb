@@ -12,6 +12,11 @@ module Firebrew
       it { expect{subject}.to raise_error(Firebrew::CommandLineError) }
     end
     
+    context 'when the options was invalid' do
+      let(:args){'install --invalid-option'}
+      it { expect{subject}.to raise_error(Firebrew::CommandLineError) }
+    end
+    
     describe '#arguments()' do
       subject { super().arguments }
       
@@ -44,11 +49,6 @@ module Firebrew
               }
             )
           end
-        end
-        
-        context 'with invalid options' do
-          let(:args){'install --invalid-option addon-name'}
-          it { expect{subject}.to raise_error(OptionParser::InvalidOption) }
         end
       end
       

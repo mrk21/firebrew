@@ -15,38 +15,35 @@ module Firebrew
       }
       
       self.register_global_options(opt)
-      opt.order!(args)
+      self.class.opt_operation(opt, :order!, args)
       
       case args.shift
       when 'install' then
-        opt.permute!(args)
-        
+        self.class.opt_operation(opt, :permute!, args)
         self.arguments[:command] = :install
         self.arguments[:params][:term] = args[0]
         
       when 'uninstall' then
-        opt.permute!(args)
+        self.class.opt_operation(opt, :permute!, args)
         self.arguments[:command] = :uninstall
         self.arguments[:params][:term] = args[0]
         
       when 'info' then
-        opt.permute!(args)
-        
+        self.class.opt_operation(opt, :permute!, args)
         self.arguments[:command] = :info
         self.arguments[:params][:term] = args[0]
         
       when 'search' then
-        opt.permute!(args)
-        
+        self.class.opt_operation(opt, :permute!, args)
         self.arguments[:command] = :search
         self.arguments[:params][:term] = args[0]
         
       when 'list' then
-        opt.permute!(args)
+        self.class.opt_operation(opt, :permute!, args)
         self.arguments[:command] = :list
         
       when nil then
-        opt.permute(['--help'])
+        self.class.opt_operation(opt, :permute, ['--help'])
       
       else
         raise Firebrew::CommandLineError
@@ -73,6 +70,14 @@ module Firebrew
     end
     
     protected
+    
+    def self.opt_operation(opt, operation, args)
+      begin
+        opt.send(operation, args)
+      rescue OptionParser::InvalidOption
+        raise Firebrew::CommandLineError
+      end
+    end
     
     def register_global_options(opt)
       opt.on('-d path','--base-dir=path','Firefox profiles.ini directory') do |v|
