@@ -47,12 +47,18 @@ module Firebrew
     end
     
     def install(params={})
+      extension = self.profile.extensions.find(params[:term])
+      raise Firebrew::OperationAlreadyCompletedError if extension.present?
       result = self.fetch_api(term: params[:term], max: 1).first
       self.profile.extensions.install(result.extension)
     end
     
     def uninstall(params={})
-      self.profile.extensions.find!(params[:term]).delete
+      begin
+        self.profile.extensions.find!(params[:term]).delete
+      rescue Firebrew::ExtensionNotFoundError
+        raise Firebrew::OperationAlreadyCompletedError
+      end
     end
     
     def info(params={})

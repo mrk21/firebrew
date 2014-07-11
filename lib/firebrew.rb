@@ -8,6 +8,7 @@ module Firebrew
   class ExtensionNotFoundError < Error; end
   class FirefoxCommandError < Error; end
   class CommandLineError < Error; end
+  class OperationAlreadyCompletedError < Error; end
 end
 
 require 'firebrew/entity'
