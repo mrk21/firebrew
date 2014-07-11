@@ -47,6 +47,9 @@ module Firebrew
         
       when nil then
         opt.permute(['--help'])
+      
+      else
+        raise Firebrew::CommandLineError
       end
     end
     

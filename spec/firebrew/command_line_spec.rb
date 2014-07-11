@@ -7,6 +7,11 @@ module Firebrew
     end
     let(:args){''}
     
+    context 'when the command was invalid' do
+      let(:args){'invalid-command'}
+      it { expect{subject}.to raise_error(Firebrew::CommandLineError) }
+    end
+    
     describe '#arguments()' do
       subject { super().arguments }
       
