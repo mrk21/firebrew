@@ -7,6 +7,26 @@ module Firebrew
     def initialize(args=[])
       opt = OptionParser.new
       opt.version = Firebrew::VERSION
+      opt.banner = <<-USAGE.split(/\n/).map{|v| v.gsub(/^(  ){4}/,'')}.join("\n")
+        Usage: firebrew [options] command
+        command:
+            install:
+                firebrew install extension-name
+            
+            uninstall:
+                firebrew uninstall extension-name
+            
+            info:
+                firebrew info extension-name
+            
+            search:
+                firebrew search term
+            
+            list:
+                firebrew list
+        
+        options:
+      USAGE
       
       self.arguments = {
         command: nil,
