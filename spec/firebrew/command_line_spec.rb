@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'stringio'
 
 module Firebrew
   describe Firebrew::CommandLine do
@@ -102,6 +103,47 @@ module Firebrew
             config: {}
           )
         end
+      end
+    end
+    
+    describe '::execute(&block)' do
+      subject do
+        begin
+          CommandLine.execute do
+            self.exeption
+          end
+        rescue SystemExit => e
+          self.io.rewind
+          return [e.status, self.io.read.strip]
+        end
+      end
+      
+      let(:exeption){nil}
+      let(:io){StringIO.new('','r+')}
+      
+      before { $stderr = self.io }
+      after { $stderr = STDERR }
+      
+      context 'when became successful' do
+        it { expect(subject[0]).to eq(0) }
+      end
+      
+      context 'when the `Firebrew::Error` was thrown' do
+        let(:exeption){raise Firebrew::CommandLineError, 'CommandLineError message'}
+        it { expect(subject[0]).to eq(7) }
+        it { expect(subject[1]).to eq('CommandLineError message') }
+      end
+      
+      context 'when the `SystemExit` was thrown' do
+        let(:exeption){abort 'abort message'}
+        it { expect(subject[0]).to eq(1) }
+        it { expect(subject[1]).to eq('abort message') }
+      end
+      
+      context 'when the unknown exception was thrown' do
+        let(:exeption){raise StandardError, 'StandardError message'}
+        it { expect(subject[0]).to eq(255) }
+        it { expect(subject[1]).to match(/^#<StandardError: StandardError message>/) }
       end
     end
   end

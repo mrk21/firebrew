@@ -4,6 +4,27 @@ module Firebrew
   class CommandLine
     attr_accessor :arguments
     
+    def self.execute
+      begin
+        if block_given? then
+          yield
+        else
+          self.new(ARGV).execute
+        end
+      rescue Firebrew::Error => e
+        $stderr.puts e.message
+        exit e.status
+      rescue SystemExit => e
+        exit 1
+      rescue Exception => e
+        $stderr.puts e.inspect
+        $stderr.puts e.backtrace
+        exit 255
+      else
+        exit 0
+      end
+    end
+    
     def initialize(args=[])
       opt = OptionParser.new
       opt.version = Firebrew::VERSION

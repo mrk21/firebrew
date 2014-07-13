@@ -2,4 +2,4 @@
 
 require 'firebrew'
 
-Firebrew::CommandLine.new(ARGV).execute
+Firebrew::CommandLine.execute
