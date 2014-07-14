@@ -29,19 +29,22 @@ module Firebrew
       opt = OptionParser.new
       opt.version = Firebrew::VERSION
       opt.banner = <<-USAGE.split(/\n/).map{|v| v.gsub(/^(  ){4}/,'')}.join("\n")
-        Usage: firebrew [options] command
-        command:
+        Usage: firebrew [--help] [--version]
+               [--base-dir=<path>] [--profile=<name>] [--firefox=<path>]
+               <command> [<args>]
+        
+        commands:
             install:
-                firebrew install extension-name
+                firebrew install <extension-name>
             
             uninstall:
-                firebrew uninstall extension-name
+                firebrew uninstall <extension-name>
             
             info:
-                firebrew info extension-name
+                firebrew info <extension-name>
             
             search:
-                firebrew search term
+                firebrew search <term>
             
             list:
                 firebrew list
