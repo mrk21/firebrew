@@ -30,7 +30,7 @@ $ firebrew [--help] [--version]
 
 #### install
 
-Install the extension which is designated by the `extension-name` argument.
+Install the extension which is designated by the `extension-name` argument:
 
 ```bash
 $ firebrew install <extension-name>
@@ -38,7 +38,7 @@ $ firebrew install <extension-name>
 
 #### uninstall
 
-Uninstall the extension which is designated by the `extension-name` argument.
+Uninstall the extension which is designated by the `extension-name` argument:
 
 ```bash
 $ firebrew uninstall <extension-name>
@@ -46,7 +46,7 @@ $ firebrew uninstall <extension-name>
 
 #### info
 
-Show detail information of the extension which is designated by the `extension-name` argument.
+Show detail information of the extension which is designated by the `extension-name` argument:
 
 ```bash
 $ firebrew info <extension-name>
@@ -54,7 +54,7 @@ $ firebrew info <extension-name>
 
 #### search
 
-Enumerate the remote extensions whose name is matched the `term` argument.
+Enumerate the remote extensions whose name is matched the `term` argument:
 
 ```bash
 $ firebrew search <term>
@@ -62,7 +62,7 @@ $ firebrew search <term>
 
 #### list
 
-Enumerate the installed extensions.
+Enumerate the installed extensions:
 
 ```bash
 $ firebrew list
@@ -96,7 +96,7 @@ The Firefox profile name:
 -p <name>, --profile=<name>
 ```
 
-The default value is "default", and it's able to overridden by the `FIREBREW_FIREFOX_PROFILE_BASE_DIR` environment variable.
+The default value is `default`, and it's able to overridden by the `FIREBREW_FIREFOX_PROFILE` environment variable.
 
 #### --firefox
 
