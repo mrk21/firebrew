@@ -18,7 +18,104 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+The structure of the command line is shown below:
+
+```bash
+$ firebrew [--help] [--version]
+           [--base-dir=<path>] [--profile=<name>] [--firefox=<path>]
+           <command> [<args>]
+```
+
+### commands
+
+#### install
+
+Install the extension which is designated by the `extension-name` argument.
+
+```bash
+$ firebrew install <extension-name>
+```
+
+#### uninstall
+
+Uninstall the extension which is designated by the `extension-name` argument.
+
+```bash
+$ firebrew uninstall <extension-name>
+```
+
+#### info
+
+Show detail information of the extension which is designated by the `extension-name` argument.
+
+```bash
+$ firebrew info <extension-name>
+```
+
+#### search
+
+Enumerate the remote extensions whose name is matched the `term` argument.
+
+```bash
+$ firebrew search <term>
+```
+
+#### list
+
+Enumerate the installed extensions.
+
+```bash
+$ firebrew list
+```
+
+### options
+
+#### --base-dir
+
+The Firefox profiles.ini directory:
+
+```bash
+-d <path>, --base-dir=<path>
+```
+
+The default value is listed below:
+
+| platform | path |
+| -------- | ---- |
+| Mac OS X | ~/Library/Application Support/Firefox | 
+| Linux    | ~/.mozilla/firefox |
+| Windows 7 x86\_64 | %UserProfile%\AppData\Roming\Mozilla\Firefox |
+
+It's able to overridden by the `FIREBREW_FIREFOX_PROFILE_BASE_DIR` environment variable.
+
+#### --profile-name
+
+The Firefox profile name:
+
+```bash
+-p <name>, --profile=<name>
+```
+
+The default value is "default", and it's able to overridden by the `FIREBREW_FIREFOX_PROFILE_BASE_DIR` environment variable.
+
+#### --firefox
+
+The Firefox command path:
+
+```bash
+-f <path>, --firefox=<path>
+```
+
+The default value is listed below:
+
+| platform | path |
+| -------- | ---- |
+| Mac OS X | /Applications/Firefox.app/Contents/MacOS/firefox-bin |
+| Linux    | /usr/bin/firefox |
+| Windows 7 x86\_64 | C:\Program Files (x86)\Mozilla Firefox\firefox.exe |
+
+It's able to overridden by the `FIREBREW_FIREFOX` environment variable.
+
 
 ## Contributing
 
@@ -27,3 +124,4 @@ TODO: Write usage instructions here
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
