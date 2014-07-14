@@ -124,15 +124,15 @@ module Firebrew
     end
     
     def register_global_options(opt)
-      opt.on('-d path','--base-dir=path','Firefox profiles.ini directory') do |v|
+      opt.on('-d <path>','--base-dir=<path>','Firefox profiles.ini directory') do |v|
         self.arguments[:config][:base_dir] = v
       end
       
-      opt.on('-p name','--profile=name','Firefox profile name') do |v|
+      opt.on('-p <name>','--profile=<name>','Firefox profile name') do |v|
         self.arguments[:config][:profile] = v
       end
       
-      opt.on('-f path','--firefox=path','Firefox command path') do |v|
+      opt.on('-f <path>','--firefox=<path>','Firefox command path') do |v|
         self.arguments[:config][:firefox] = v
       end
     end
