@@ -62,7 +62,9 @@ module Firebrew::Firefox
       
       def data_path
         path = File.join(self.profile.path, 'extensions.json')
-        raise Firebrew::ExtensionsFileNotFoundError unless File.exists? path
+        unless File.exists?(path) then
+          File.write(path, %({"schemaVersion": 16, "addons": []}))
+        end
         path
       end
       

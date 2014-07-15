@@ -46,8 +46,14 @@ module Firebrew::Firefox
         end
         
         context 'when not existed `extension.json`' do
-          before {FileUtils.rm_f './tmp/extensions.json'}
-          it { expect{subject}.to raise_error(Firebrew::ExtensionsFileNotFoundError) }
+          before do
+            FileUtils.rm_f './tmp/extensions.json'
+            subject
+          end
+          
+          it 'should create that' do
+            expect(File.exists? './tmp/extensions.json').to be_truthy
+          end
         end
       end
       

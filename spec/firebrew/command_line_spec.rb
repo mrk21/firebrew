@@ -130,7 +130,7 @@ module Firebrew
       
       context 'when the `Firebrew::Error` was thrown' do
         let(:exeption){raise Firebrew::CommandLineError, 'CommandLineError message'}
-        it { expect(subject[0]).to eq(7) }
+        it { expect(subject[0]).to eq(6) }
         it { expect(subject[1]).to eq('CommandLineError message') }
       end
       
