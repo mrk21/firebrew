@@ -16,7 +16,8 @@ Or install it yourself as:
 
     $ gem install firebrew
 
-NOTE: This program execution requires the OpenSSL.
+
+_NOTE: This program execution requires the OpenSSL._
 
 ## Usage
 
