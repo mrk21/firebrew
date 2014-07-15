@@ -15,6 +15,12 @@ module Firebrew
         ENV['FIREBREW_FIREFOX'] = nil
       end
       
+      after do
+        ENV['FIREBREW_FIREFOX_PROFILE_BASE_DIR'] = nil
+        ENV['FIREBREW_FIREFOX_PROFILE'] = nil
+        ENV['FIREBREW_FIREFOX'] = nil
+      end
+      
       context 'when the `platform` was "MacOS"' do
         let(:platform){'x86_64-darwin13.0'}
         it do
@@ -37,14 +43,71 @@ module Firebrew
         end
       end
       
-      context 'when the `platform` was "Windows 7 x86_64"' do
+      context 'when the `platform` was "Windows"' do
         let(:platform){'x64-mingw32'}
-        it do
-          is_expected.to eq(
-            base_dir: '~/AppData/Roming/Mozilla/Firefox',
-            firefox: 'C:/Program Files (x86)/Mozilla Firefox/firefox.exe',
-            profile: 'default'
-          )
+        
+        before do
+          ENV['APPDATA'] = nil
+          ENV['PROGRAMFILES'] = nil
+          ENV['PROGRAMFILES(X86)'] = nil
+        end
+        
+        after do
+          ENV['APPDATA'] = nil
+          ENV['PROGRAMFILES'] = nil
+          ENV['PROGRAMFILES(X86)'] = nil
+        end
+        
+        context 'when the ruby architecture was "x86"' do
+          context 'when the `platform` was "Windows 7 x86_64"' do
+            before do
+              ENV['APPDATA'] = 'C:\Users\admin\AppData\Roaming'
+              ENV['PROGRAMFILES'] = 'C:\Program Files (x86)'
+              ENV['PROGRAMFILES(X86)'] = 'C:\Program Files (x86)'
+            end
+            
+            it do
+              is_expected.to eq(
+                base_dir: 'C:/Users/admin/AppData/Roaming/Mozilla/Firefox',
+                firefox: 'C:/Program Files (x86)/Mozilla Firefox/firefox.exe',
+                profile: 'default'
+              )
+            end
+          end
+          
+          context 'when the `platform` was "Windows XP x86"' do
+            before do
+              ENV['APPDATA'] = 'C:\Documents and Settings\Administrator\Application Data'
+              ENV['PROGRAMFILES'] = 'C:\Program Files'
+              ENV['PROGRAMFILES(X86)'] = nil
+            end
+            
+            it do
+              is_expected.to eq(
+                base_dir: 'C:/Documents and Settings/Administrator/Application Data/Mozilla/Firefox',
+                firefox: 'C:/Program Files/Mozilla Firefox/firefox.exe',
+                profile: 'default'
+              )
+            end
+          end
+        end
+        
+        context 'when the ruby architecture was "X86_64"' do
+          context 'when the `platform` was "Windows 7 x86_64"' do
+            before do
+              ENV['APPDATA'] = 'C:\Users\admin\AppData\Roaming'
+              ENV['PROGRAMFILES'] = 'C:\Program Files'
+              ENV['PROGRAMFILES(X86)'] = 'C:\Program Files (x86)'
+            end
+            
+            it do
+              is_expected.to eq(
+                base_dir: 'C:/Users/admin/AppData/Roaming/Mozilla/Firefox',
+                firefox: 'C:/Program Files (x86)/Mozilla Firefox/firefox.exe',
+                profile: 'default'
+              )
+            end
+          end
         end
       end
       
@@ -53,12 +116,6 @@ module Firebrew
           ENV['FIREBREW_FIREFOX_PROFILE_BASE_DIR'] = 'path/to/profile_base_directory'
           ENV['FIREBREW_FIREFOX_PROFILE'] = 'profile-name'
           ENV['FIREBREW_FIREFOX'] = 'path/to/firefox'
-        end
-        
-        after do
-          ENV['FIREBREW_FIREFOX_PROFILE_BASE_DIR'] = nil
-          ENV['FIREBREW_FIREFOX_PROFILE'] = nil
-          ENV['FIREBREW_FIREFOX'] = nil
         end
         
         it do

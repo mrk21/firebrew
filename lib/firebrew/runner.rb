@@ -23,8 +23,10 @@ module Firebrew
         result[:firefox] ||= '/usr/bin/firefox'
         
       when /mswin(?!ce)|mingw|cygwin|bccwin/ then
-        result[:base_dir] ||= '~/AppData/Roming/Mozilla/Firefox'
-        result[:firefox] ||= 'C:/Program Files (x86)/Mozilla Firefox/firefox.exe'
+        appdata = ENV['APPDATA'].to_s.gsub('\\','/')
+        programfiles = (ENV['PROGRAMFILES(X86)'] || ENV['PROGRAMFILES']).to_s.gsub('\\','/')
+        result[:base_dir] ||= File.join(appdata, 'Mozilla/Firefox')
+        result[:firefox] ||= File.join(programfiles, 'Mozilla Firefox/firefox.exe')
       end
       
       result
