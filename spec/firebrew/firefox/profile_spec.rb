@@ -33,7 +33,7 @@ module Firebrew::Firefox
           expect(subject[1].is_default).to be_falsey
           
           expect(subject[2].name).to eq('abs_profile')
-          expect(subject[2].path).to eq('/path/to/abs_profile')
+          expect(subject[2].path).to eq(File.expand_path('/path/to/abs_profile'))
           expect(subject[2].is_default).to be_falsey
         end
         
