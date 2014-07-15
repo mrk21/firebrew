@@ -10,7 +10,7 @@ module Firebrew::Firefox
       @config = config
       @executer = executer
       begin
-        result = @executer.exec('%{firefox} --version' % @config)
+        result = @executer.exec('"%{firefox}" --version' % @config)
         raise Firebrew::FirefoxCommandError unless result[0] =~ /Mozilla Firefox/
         raise Firebrew::FirefoxCommandError unless result[1] == 0
       rescue SystemCallError
@@ -20,7 +20,7 @@ module Firebrew::Firefox
     
     def version
       return @version if @version.present?
-      result = @executer.exec('%{firefox} --version' % @config)[0]
+      result = @executer.exec('"%{firefox}" --version' % @config)[0]
       @version = result.match(/[0-9.]+/)[0]
     end
   end

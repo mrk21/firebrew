@@ -135,7 +135,7 @@ module Firebrew
         Runner.new(
           base_dir: './tmp',
           data_file: 'profiles.ini',
-          firefox: './spec/double/firefox.rb'
+          firefox: ENV['OS'].nil? ? './spec/double/firefox.rb' : './spec/double/firefox.bat'
         )
       end
       
