@@ -16,6 +16,8 @@ Or install it yourself as:
 
     $ gem install firebrew
 
+NOTE: This program execution requires the OpenSSL.
+
 ## Usage
 
 The structure of the command line is shown below:
@@ -80,11 +82,11 @@ The Firefox profiles.ini directory:
 
 The default value is listed below:
 
-| platform | path |
-| -------- | ---- |
-| Mac OS X | ~/Library/Application Support/Firefox | 
-| Linux    | ~/.mozilla/firefox |
-| Windows 7 x86\_64 | %UserProfile%\AppData\Roming\Mozilla\Firefox |
+| platform | value |
+| -------- | ----- |
+| Mac OS X | `~/Library/Application Support/Firefox` | 
+| Linux    | `~/.mozilla/firefox` |
+| Windows  | `%APPDATA%\Mozilla\Firefox` |
 
 It's able to overridden by the `FIREBREW_FIREFOX_PROFILE_BASE_DIR` environment variable.
 
@@ -108,11 +110,11 @@ The Firefox command path:
 
 The default value is listed below:
 
-| platform | path |
-| -------- | ---- |
-| Mac OS X | /Applications/Firefox.app/Contents/MacOS/firefox-bin |
-| Linux    | /usr/bin/firefox |
-| Windows 7 x86\_64 | C:\Program Files (x86)\Mozilla Firefox\firefox.exe |
+| platform | value |
+| -------- | ----- |
+| Mac OS X | `/Applications/Firefox.app/Contents/MacOS/firefox-bin` |
+| Linux    | `/usr/bin/firefox` |
+| Windows  | `%PROGRAMFILES%\Mozilla Firefox\firefox.exe` or `%PROGRAMFILES(X86)%\Mozilla Firefox\firefox.exe` |
 
 It's able to overridden by the `FIREBREW_FIREFOX` environment variable.
 
