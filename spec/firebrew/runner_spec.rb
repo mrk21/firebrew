@@ -7,7 +7,7 @@ module Firebrew
         Runner.default_config(self.platform)
       end
       
-      let(:platform){RUBY_PLATFORM}
+      let(:platform){'x86_64-darwin13.0'}
       
       before do
         ENV['FIREBREW_FIREFOX_PROFILE_BASE_DIR'] = nil
@@ -27,7 +27,8 @@ module Firebrew
           is_expected.to eq(
             base_dir: '~/Library/Application Support/Firefox',
             firefox: '/Applications/Firefox.app/Contents/MacOS/firefox-bin',
-            profile: 'default'
+            profile: 'default',
+            os: 'darwin'
           )
         end
       end
@@ -38,7 +39,8 @@ module Firebrew
           is_expected.to eq(
             base_dir: '~/.mozilla/firefox',
             firefox: '/usr/bin/firefox',
-            profile: 'default'
+            profile: 'default',
+            os: 'linux'
           )
         end
       end
@@ -70,7 +72,8 @@ module Firebrew
               is_expected.to eq(
                 base_dir: 'C:/Users/admin/AppData/Roaming/Mozilla/Firefox',
                 firefox: 'C:/Program Files (x86)/Mozilla Firefox/firefox.exe',
-                profile: 'default'
+                profile: 'default',
+                os: 'winnt'
               )
             end
           end
@@ -86,7 +89,8 @@ module Firebrew
               is_expected.to eq(
                 base_dir: 'C:/Documents and Settings/Administrator/Application Data/Mozilla/Firefox',
                 firefox: 'C:/Program Files/Mozilla Firefox/firefox.exe',
-                profile: 'default'
+                profile: 'default',
+                os: 'winnt'
               )
             end
           end
@@ -104,7 +108,8 @@ module Firebrew
               is_expected.to eq(
                 base_dir: 'C:/Users/admin/AppData/Roaming/Mozilla/Firefox',
                 firefox: 'C:/Program Files (x86)/Mozilla Firefox/firefox.exe',
-                profile: 'default'
+                profile: 'default',
+                os: 'winnt'
               )
             end
           end
@@ -122,7 +127,8 @@ module Firebrew
           is_expected.to eq(
             base_dir: 'path/to/profile_base_directory',
             firefox: 'path/to/firefox',
-            profile: 'profile-name'
+            profile: 'profile-name',
+            os: 'darwin'
           )
         end
       end

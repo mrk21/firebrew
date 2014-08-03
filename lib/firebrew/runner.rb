@@ -17,16 +17,19 @@ module Firebrew
       when /darwin/ then
         result[:base_dir] ||= '~/Library/Application Support/Firefox'
         result[:firefox] ||= '/Applications/Firefox.app/Contents/MacOS/firefox-bin'
+        result[:os] = 'darwin'
         
       when /linux/ then
         result[:base_dir] ||= '~/.mozilla/firefox'
         result[:firefox] ||= '/usr/bin/firefox'
+        result[:os] = 'linux'
         
       when /mswin(?!ce)|mingw|cygwin|bccwin/ then
         appdata = ENV['APPDATA'].to_s.gsub('\\','/')
         programfiles = (ENV['PROGRAMFILES(X86)'] || ENV['PROGRAMFILES']).to_s.gsub('\\','/')
         result[:base_dir] ||= File.join(appdata, 'Mozilla/Firefox')
         result[:firefox] ||= File.join(programfiles, 'Mozilla Firefox/firefox.exe')
+        result[:os] = 'winnt'
       end
       
       result
@@ -78,7 +81,7 @@ module Firebrew
     protected
     
     def fetch_api(params={})
-      params.merge!(version: @firefox.version)
+      params.merge!(version: @firefox.version, os: self.config[:os])
       AmoApi::Search.fetch!(params)
     end
   end
