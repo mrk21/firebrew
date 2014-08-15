@@ -42,7 +42,7 @@ module Firebrew::Firefox
         FileUtils.mkdir_p dir
         install_path = '%s.xpi' % File.join(dir, extension.guid)
         
-        open(extension.uri, 'rb') do |i|
+        open([extension.uri].flatten.first, 'rb') do |i|
           open(install_path, 'wb') do |o|
             o.write i.read
           end

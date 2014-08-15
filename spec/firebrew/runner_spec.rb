@@ -145,7 +145,7 @@ module Firebrew
         )
       end
       
-      let(:search_params){{term: 'hoge', version: '30.0', max: 1}}
+      let(:search_params){{term: 'hoge', version: '30.0', max: 1, os: Runner.default_config[:os]}}
       
       before do
         FileUtils.cp './spec/fixtures/firefox/profile/base.ini', './tmp/profiles.ini'

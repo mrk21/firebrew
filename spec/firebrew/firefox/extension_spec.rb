@@ -87,7 +87,7 @@ module Firebrew::Firefox
       end
       
       describe '#install(extension)' do
-        before { self.instance.install(self.extension) }
+        subject { self.instance.install(self.extension) }
         
         let(:extension) do
           Extension.new({
@@ -97,11 +97,13 @@ module Firebrew::Firefox
         end
         
         it 'should copy the `path/to/profile/extensions/guid.xpi`' do
+          subject
           path = File.join(self.instance.profile.path, 'extensions/%s.xpi' % self.extension.guid)
           expect(File.exists? path).to be_truthy
         end
         
         it 'should add the `extension` extension' do
+          subject
           all = self.instance.all
           extension = self.extension
           extension.uri = './tmp/extensions/hoge@example.org.xpi'
@@ -109,6 +111,22 @@ module Firebrew::Firefox
           expect(all[0]).to eq(self.extensions[0])
           expect(all[1]).to eq(self.extensions[1])
           expect(all[2]).to eq(self.extension)
+        end
+        
+        context 'when an `uri` of the `extension` was equal or greater than two' do
+          let(:extension) do
+            Extension.new({
+              guid: 'hoge@example.org',
+              uri: [
+                './spec/fixtures/amo_api/search/base.xml',
+                './spec/fixtures/amo_api/search/not_exists.xml'
+              ]
+            }, self.manager)
+          end
+          
+          it 'should not throw exceptions' do
+            expect{subject}.to_not raise_error
+          end
         end
       end
       
