@@ -1,6 +1,8 @@
 require 'fileutils'
 require 'open-uri'
 require 'json'
+require 'zip'
+require 'rexml/document'
 require 'firebrew/firefox/basic_extension'
 
 module Firebrew::Firefox
@@ -22,7 +24,7 @@ module Firebrew::Firefox
             name: extension['defaultLocale']['name'],
             guid: extension['id'],
             version: extension['version'],
-            uri: '%s.xpi' % File.join(self.profile.path, 'extensions', extension['id'])
+            uri: extension['descriptor'],
           }, self)
         end
       end
@@ -40,11 +42,31 @@ module Firebrew::Firefox
       def install(extension)
         dir = File.join(self.profile.path, 'extensions')
         FileUtils.mkdir_p dir
-        install_path = '%s.xpi' % File.join(dir, extension.guid)
         
-        open([extension.uri].flatten.first, 'rb') do |i|
-          open(install_path, 'wb') do |o|
-            o.write i.read
+        open([extension.uri].flatten.first, 'rb') do |r|
+          xpi = Zip::File.open(r)
+          install_manifests = xpi.find_entry('install.rdf')
+          install_manifests = install_manifests.get_input_stream.read
+          install_manifests = REXML::Document.new(install_manifests)
+          is_unpacking = REXML::XPath.match(install_manifests, '/RDF/Description/em:unpack/text()').first
+          is_unpacking = is_unpacking.nil? ? false : is_unpacking.value.strip == 'true'
+          
+          if is_unpacking then
+            extension.uri = File.join(dir, extension.guid)
+            FileUtils.mkdir_p(extension.uri)
+            xpi.each do |entry|
+              next if entry.ftype == :directory
+              content = entry.get_input_stream.read
+              Dir.chdir(extension.uri) do
+                FileUtils.mkdir_p File.dirname(entry.name)
+                File.write(entry.name, content)
+              end
+            end
+          else
+            extension.uri = '%s.xpi' % File.join(dir, extension.guid)
+            open(extension.uri, 'wb') do |w|
+              w.write r.read
+            end
           end
         end
         
@@ -53,7 +75,7 @@ module Firebrew::Firefox
       end
       
       def uninstall(extension)
-        FileUtils.rm_f extension.uri
+        FileUtils.rm_rf extension.uri
         self.remove(extension)
         self.push
       end
@@ -83,6 +105,7 @@ module Firebrew::Firefox
           'id'=> extension.guid,
           'location'=> 'app-profile',
           'version'=> extension.version,
+          'descriptor'=> extension.uri,
           'defaultLocale'=> {
             'name'=> extension.name
           }

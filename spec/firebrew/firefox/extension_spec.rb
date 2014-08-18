@@ -1,12 +1,13 @@
 require 'spec_helper'
 require 'fileutils'
+require 'digest/md5'
 
 module Firebrew::Firefox
   describe Firebrew::Firefox::Extension do
     let(:manager) do
       Extension::Manager.new(
         profile: Profile.new(
-          path: './tmp'
+          path: File.join(Dir.pwd, 'tmp')
         )
       )
     end
@@ -16,18 +17,19 @@ module Firebrew::Firefox
         name: 'Japanese Language Pack',
         guid: 'langpack-ja@firefox.mozilla.org',
         version: '30.0',
-        uri: './tmp/extensions/langpack-ja@firefox.mozilla.org.xpi'
+        uri: File.join(Dir.pwd, 'tmp/extensions/langpack-ja@firefox.mozilla.org.xpi')
       }, self.manager),
       Extension.new({
         name: 'Vimperator',
         guid: 'vimperator@mozdev.org',
         version: '3.8.2',
-        uri: './tmp/extensions/vimperator@mozdev.org.xpi'
+        uri: File.join(Dir.pwd, 'tmp/extensions/vimperator@mozdev.org.xpi')
       }, self.manager)
     ]}
     
     before do
-      FileUtils.cp('./spec/fixtures/firefox/extension/extensions.v16.json', './tmp/extensions.json')
+      json = File.read('./spec/fixtures/firefox/extension/extensions.v16.json')
+      File.write('./tmp/extensions.json', json % {profile_path: self.manager.profile.path})
     end
     
     describe :Manager do
@@ -92,21 +94,24 @@ module Firebrew::Firefox
         let(:extension) do
           Extension.new({
             guid: 'hoge@example.org',
-            uri: './spec/fixtures/amo_api/search/base.xml'
+            uri: File.join(Dir.pwd, 'spec/fixtures/firefox/extension/unpack_false.xpi')
           }, self.manager)
         end
         
-        it 'should copy the `path/to/profile/extensions/guid.xpi`' do
+        let(:expected_path) do
+          File.join(self.instance.profile.path, 'extensions/%s.xpi' % self.extension.guid)
+        end
+        
+        it 'should copy the `path/to/profile/extensions/<GUID>.xpi`' do
           subject
-          path = File.join(self.instance.profile.path, 'extensions/%s.xpi' % self.extension.guid)
-          expect(File.exists? path).to be_truthy
+          expect(File.exists? self.expected_path).to be_truthy
         end
         
         it 'should add the `extension` extension' do
           subject
           all = self.instance.all
           extension = self.extension
-          extension.uri = './tmp/extensions/hoge@example.org.xpi'
+          extension.uri = File.join(Dir.pwd, 'tmp/extensions/hoge@example.org.xpi')
           expect(all.size).to eq(3)
           expect(all[0]).to eq(self.extensions[0])
           expect(all[1]).to eq(self.extensions[1])
@@ -118,8 +123,8 @@ module Firebrew::Firefox
             Extension.new({
               guid: 'hoge@example.org',
               uri: [
-                './spec/fixtures/amo_api/search/base.xml',
-                './spec/fixtures/amo_api/search/not_exists.xml'
+                File.join(Dir.pwd, 'spec/fixtures/firefox/extension/unpack_false.xpi'),
+                File.join(Dir.pwd, 'spec/fixtures/firefox/extension/not_exists.xpi'),
               ]
             }, self.manager)
           end
@@ -128,19 +133,89 @@ module Firebrew::Firefox
             expect{subject}.to_not raise_error
           end
         end
+        
+        context 'when an `em:unpack` value of the `install.rdf` in the XPI package not exsisted' do
+          let(:extension) do
+            Extension.new({
+              guid: 'hoge@example.org',
+              uri: File.join(Dir.pwd, 'spec/fixtures/firefox/extension/unpack_null.xpi')
+            }, self.manager)
+          end
+          
+          it 'should copy the `path/to/profile/extensions/<GUID>.xpi`' do
+            subject
+            expect(File.exists? self.expected_path).to be_truthy
+          end
+          
+          it 'should add the `extension` extension' do
+            subject
+            all = self.instance.all
+            extension = self.extension
+            extension.uri = File.join(Dir.pwd, 'tmp/extensions/hoge@example.org.xpi')
+            expect(all.size).to eq(3)
+            expect(all[0]).to eq(self.extensions[0])
+            expect(all[1]).to eq(self.extensions[1])
+            expect(all[2]).to eq(self.extension)
+          end
+        end
+        
+        context 'when an `em:unpack` value of the `install.rdf` in the XPI package was true' do
+          let(:extension) do
+            Extension.new({
+              guid: 'hoge@example.org',
+              uri: './spec/fixtures/firefox/extension/unpack_true.xpi'
+            }, self.manager)
+          end
+          
+          let(:expected_path) do
+            File.join(self.instance.profile.path, 'extensions/%s' % self.extension.guid)
+          end
+          
+          it 'should copy the `path/to/profile/extensions/<GUID>`' do
+            subject
+            expect(File.exists? self.expected_path).to be_truthy
+          end
+          
+          it 'should unzip all files in the XPI package' do
+            subject
+            md5list = File.read('./spec/fixtures/firefox/extension/unpack_true.md5')
+            Dir.chdir(self.expected_path) do
+              md5list.each_line do |item|
+                md5, path = item.split(/\s+/)
+                expect(Digest::MD5.hexdigest(File.read path)).to eq(md5)
+              end
+            end
+          end
+          
+          it 'should add the `extension` extension' do
+            subject
+            all = self.instance.all
+            extension = self.extension
+            extension.uri = File.join(Dir.pwd, 'tmp/extensions/hoge@example.org')
+            expect(all.size).to eq(3)
+            expect(all[0]).to eq(self.extensions[0])
+            expect(all[1]).to eq(self.extensions[1])
+            expect(all[2]).to eq(self.extension)
+          end
+        end
       end
       
       describe '#uninstall(extension)' do
         let(:extension) do
           Extension.new({
             guid: 'hoge@example.org',
-            uri: './tmp/extensions/hoge@example.org.xpi'
+            uri: File.join(Dir.pwd, 'tmp/extensions/hoge@example.org.xpi')
           }, self.manager)
         end
         
-        before do
-          FileUtils.cp('./spec/fixtures/firefox/extension/extensions_added_hoge.v16.json', './tmp/extensions.json')
+        let(:create_xpi_block){->{
           File.write self.extension.uri, ''
+        }}
+        
+        before do
+          json = File.read('./spec/fixtures/firefox/extension/extensions_added_hoge.v16.json')
+          File.write('./tmp/extensions.json', json % {profile_path: self.manager.profile.path})
+          self.create_xpi_block[]
           self.manager.uninstall(self.extension)
         end
         
@@ -153,6 +228,30 @@ module Firebrew::Firefox
           expect(all.size).to eq(2)
           expect(all[0]).to eq(self.extensions[0])
           expect(all[1]).to eq(self.extensions[1])
+        end
+        
+        context 'when `em:unpack` value of the `install.rdf` in the `extension` was true' do
+          let(:extension) do
+            Extension.new({
+              guid: 'hoge@example.org',
+              uri: File.join(Dir.pwd, 'tmp/extensions/hoge@example.org')
+            }, self.manager)
+          end
+          
+          let(:create_xpi_block){->{
+            FileUtils.mkdir_p self.extension.uri
+          }}
+          
+          it 'should remove the `extension` file' do
+            expect(File.exists? self.extension.uri).to be_falsey
+          end
+          
+          it 'should remove the `extension` extension' do
+            all = self.instance.all
+            expect(all.size).to eq(2)
+            expect(all[0]).to eq(self.extensions[0])
+            expect(all[1]).to eq(self.extensions[1])
+          end
         end
       end
     end
