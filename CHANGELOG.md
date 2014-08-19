@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.1.3](https://github.com/mrk21/firebrew/tree/v1.1.3) - 2014-08-19
+## [0.1.3](https://github.com/mrk21/firebrew/tree/v0.1.3) - 2014-08-19
 
 * Bugfix [#24](https://github.com/mrk21/firebrew/issues/24): When the `em:unpack` value of the install manifests was true, is unable to normally installing
 
