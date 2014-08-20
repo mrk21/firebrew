@@ -46,7 +46,7 @@ module Firebrew::Firefox
       end
     end
     
-    attr_accessor :name, :path, :is_default
+    entity_attr :name, :path, :is_default
     
     def extensions
       Extension::Manager.new(profile: self)
