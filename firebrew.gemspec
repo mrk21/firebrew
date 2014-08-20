@@ -24,7 +24,6 @@ Gem::Specification.new do |spec|
   
   spec.add_dependency "activesupport", "~> 4.1"
   spec.add_dependency "activeresource", "~> 4.0"
-  spec.add_dependency "activemodel", "~> 4.1"
   spec.add_dependency "inifile", "~> 2.0"
   spec.add_dependency "rubyzip", "~> 1.1"
 end

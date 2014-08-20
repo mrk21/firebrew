@@ -27,6 +27,12 @@ module Firebrew
       end
     end
     
+    def initialize(attributes={})
+      attributes.each do |(k,v)|
+        self.send("#{k}=", v)
+      end
+    end
+    
     def ==(rop)
       self.class.attributes.each do |attr|
         return false unless self.send(attr) == rop.send(attr)

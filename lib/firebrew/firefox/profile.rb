@@ -1,10 +1,9 @@
-require 'active_model'
 require 'inifile'
 require 'firebrew/firefox/extension'
 
 module Firebrew::Firefox
   class Profile
-    include ActiveModel::Model
+    include Firebrew::Entity
     
     class Manager
       def initialize(params={})
