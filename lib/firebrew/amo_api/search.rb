@@ -1,20 +1,17 @@
-require 'active_resource'
 require 'uri'
+require 'rexml/document'
+require 'faraday'
 require 'firebrew/firefox/basic_extension'
 
 module Firebrew::AmoApi
-  class Search < ActiveResource::Base
-    class Format
-      include ActiveResource::Formats::XmlFormat
-      
-      def decode(xml)
-        results = super(xml)['addon'] || []
-        results.instance_of?(Array) ? results : [results]
-      end
+  class Search < Firebrew::Firefox::BasicExtension
+    def self.connection=(val)
+      @connection = val
     end
     
-    self.site = 'https://services.addons.mozilla.org'
-    self.format = Format.new
+    def self.connection
+      @connection ||= Faraday.new(url: 'https://services.addons.mozilla.org')
+    end
     
     def self.path(params={})
       path_source = '/ja/firefox/api/%{api_version}/search/%{term}/%{type}/%{max}/%{os}/%{version}'
@@ -29,7 +26,10 @@ module Firebrew::AmoApi
     end
     
     def self.fetch(params={})
-      self.find(:all, from: self.path(params)).to_a
+      response = self.connection.get(self.path params)
+      dom = REXML::Document.new response.body
+      addons = REXML::XPath.match(dom, '/searchresults/addon')
+      addons.map{|v| Search.new v}
     end
     
     def self.fetch!(params={})
@@ -38,12 +38,20 @@ module Firebrew::AmoApi
       results
     end
     
-    def extension
-      Firebrew::Firefox::BasicExtension.new(
-        name: self.name,
-        guid: self.guid,
-        uri: self.install,
-        version: self.version
+    attr_reader :data
+    
+    def initialize(data)
+      @data = data
+      
+      val = lambda do |name|
+        REXML::XPath.match(self.data, "#{name}/text()").first.value.strip
+      end
+      
+      super(
+        name: val[:name],
+        guid: val[:guid],
+        uri: val[:install],
+        version: val[:version]
       )
     end
   end

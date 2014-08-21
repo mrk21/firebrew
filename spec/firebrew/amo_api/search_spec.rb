@@ -5,32 +5,30 @@ module Firebrew::AmoApi
     before do
       response = File.read("spec/fixtures/amo_api/search/#{self.fixture}")
       
-      ActiveResource::HttpMock.respond_to do |mock|
-        mock.get Search.path(self.params), {}, response
-      end
+      Search.connection = double(:connection)
+      allow(Search.connection).to receive(:get).and_return(OpenStruct.new body: response)
     end
     
     after do
-      ActiveResource::HttpMock.reset!
+      Search.connection = nil
     end
     
-    let(:params){{term: 'hoge'}}
     let(:fixture){'base.xml'}
     
     describe '::fetch(params)' do
-      subject{Search.fetch self.params}
+      subject{Search.fetch term: ''}
       
       it { is_expected.to be_instance_of(Array) }
       it { expect(subject.size).to eq(3) }
       
       it 'should construct objects' do
-        expect(subject[0].id).to eq('100')
+        expect(subject[0].guid).to eq('hoge-ja@example.org')
         expect(subject[0].name).to eq('hoge')
         
-        expect(subject[1].id).to eq('101')
+        expect(subject[1].guid).to eq('hoge-fuga-ja@example.org')
         expect(subject[1].name).to eq('hoge_fuga')
         
-        expect(subject[2].id).to eq('102')
+        expect(subject[2].guid).to eq('hoge-hoge-ja@example.org')
         expect(subject[2].name).to eq('hoge_hoge')
       end
       
@@ -47,14 +45,14 @@ module Firebrew::AmoApi
         it { expect(subject.size).to eq(1) }
         
         it 'should construct objects' do
-          expect(subject[0].id).to eq('100')
+          expect(subject[0].guid).to eq('hoge-ja@example.org')
           expect(subject[0].name).to eq('hoge')
         end
       end
     end
     
     describe '::fetch!(params)' do
-      subject {Search.fetch! self.params}
+      subject {Search.fetch! term: ''}
       
       it { is_expected.to be_instance_of(Array) }
       it { expect(subject.size).to eq(3) }

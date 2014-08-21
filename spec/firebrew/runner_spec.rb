@@ -150,14 +150,13 @@ module Firebrew
       before do
         FileUtils.cp './spec/fixtures/firefox/profile/base.ini', './tmp/profiles.ini'
         response = File.read("./spec/fixtures/amo_api/search/base.xml")
-        ActiveResource::HttpMock.respond_to do |mock|
-          mock.get AmoApi::Search.path(self.search_params), {}, response
-        end
+        AmoApi::Search.connection = double(:connection)
+        allow(AmoApi::Search.connection).to receive(:get).and_return(OpenStruct.new body: response)
       end
       
       after do
         FileUtils.rm_f './tmp/*'
-        ActiveResource::HttpMock.reset!
+        AmoApi::Search.connection = nil
       end
       
       describe '#install(params)' do
