@@ -20,7 +20,7 @@ module Firebrew
       rescue Exception => e
         $stderr.puts e.inspect
         $stderr.puts e.backtrace
-        exit 255
+        exit 1
       else
         exit 0
       end

@@ -130,8 +130,14 @@ module Firebrew
       
       context 'when the `Firebrew::Error` was thrown' do
         let(:exeption){raise Firebrew::CommandLineError, 'CommandLineError message'}
-        it { expect(subject[0]).to eq(6) }
+        it { expect(subject[0]).to eq(1) }
         it { expect(subject[1]).to eq('CommandLineError message') }
+      end
+      
+      context 'when the `Firebrew::OperationAlreadyCompletedError` was thrown' do
+        let(:exeption){raise Firebrew::OperationAlreadyCompletedError, 'OperationAlreadyCompletedError message'}
+        it { expect(subject[0]).to eq(2) }
+        it { expect(subject[1]).to eq('OperationAlreadyCompletedError message') }
       end
       
       context 'when the `SystemExit` was thrown' do
@@ -142,7 +148,7 @@ module Firebrew
       
       context 'when the unknown exception was thrown' do
         let(:exeption){raise StandardError, 'StandardError message'}
-        it { expect(subject[0]).to eq(255) }
+        it { expect(subject[0]).to eq(1) }
         it { expect(subject[1]).to match(/^#<StandardError: StandardError message>/) }
       end
     end
