@@ -91,7 +91,7 @@ module Firebrew::Firefox
       end
       
       def fetch
-        return @data if @data.present?
+        return @data unless @data.nil?
         @data = JSON.load(File.read(self.data_path))
       end
       

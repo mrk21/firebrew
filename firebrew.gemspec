@@ -22,7 +22,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec", "~> 3.0"
   
-  spec.add_dependency "activesupport", "~> 4.1"
   spec.add_dependency "inifile", "~> 2.0"
   spec.add_dependency "rubyzip", "~> 1.1"
   spec.add_dependency "faraday", "~> 0.9"

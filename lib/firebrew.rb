@@ -10,7 +10,6 @@ module Firebrew
   class OperationAlreadyCompletedError < Error; def status; 7 end end
 end
 
-require 'active_support/all'
 require 'firebrew/entity'
 require 'firebrew/amo_api/search'
 require 'firebrew/firefox/profile'

@@ -19,7 +19,7 @@ module Firebrew::Firefox
     end
     
     def version
-      return @version if @version.present?
+      return @version unless @version.nil?
       result = @executer.exec('"%{firefox}" --version' % @config)[0]
       @version = result.match(/[0-9.]+/)[0]
     end

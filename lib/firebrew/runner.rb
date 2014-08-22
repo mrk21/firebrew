@@ -53,7 +53,7 @@ module Firebrew
     
     def install(params={})
       extension = self.profile.extensions.find(params[:term])
-      raise Firebrew::OperationAlreadyCompletedError if extension.present?
+      raise Firebrew::OperationAlreadyCompletedError unless extension.nil?
       result = self.fetch_api(term: params[:term], max: 1).first
       self.profile.extensions.install(result)
     end
