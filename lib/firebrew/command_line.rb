@@ -1,4 +1,5 @@
 require 'optparse'
+require 'firebrew/runner'
 
 module Firebrew
   class CommandLine

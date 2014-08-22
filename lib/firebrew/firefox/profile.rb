@@ -1,4 +1,5 @@
 require 'inifile'
+require 'firebrew/entity'
 require 'firebrew/firefox/extension'
 
 module Firebrew::Firefox

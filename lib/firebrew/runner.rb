@@ -1,6 +1,7 @@
 require 'firebrew/amo_api/search'
 require 'firebrew/firefox/profile'
 require 'firebrew/firefox/extension'
+require 'firebrew/firefox/command'
 
 module Firebrew
   class Runner

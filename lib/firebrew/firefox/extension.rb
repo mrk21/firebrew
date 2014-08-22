@@ -1,8 +1,8 @@
 require 'fileutils'
 require 'open-uri'
 require 'json'
-require 'zip'
 require 'rexml/document'
+require 'zip'
 require 'firebrew/firefox/basic_extension'
 
 module Firebrew::Firefox

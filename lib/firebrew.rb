@@ -1,4 +1,5 @@
 require "firebrew/version"
+require 'rake/pathmap'
 
 module Firebrew
   class Error < StandardError; def status; 1 end end
@@ -10,10 +11,6 @@ module Firebrew
   class OperationAlreadyCompletedError < Error; def status; 7 end end
 end
 
-require 'firebrew/entity'
-require 'firebrew/amo_api/search'
-require 'firebrew/firefox/profile'
-require 'firebrew/firefox/extension'
-require 'firebrew/firefox/command'
-require 'firebrew/runner'
-require 'firebrew/command_line'
+Dir[__FILE__.pathmap('%X/*.rb')].each do |rb|
+  require rb.pathmap('%-1d/%n')
+end
