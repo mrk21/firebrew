@@ -35,7 +35,7 @@ module Firebrew::Firefox
       
       def find!(name)
         result = self.find(name)
-        raise Firebrew::ExtensionNotFoundError if result.nil?
+        raise Firebrew::ExtensionNotFoundError, 'Extension not found!' if result.nil?
         result
       end
       

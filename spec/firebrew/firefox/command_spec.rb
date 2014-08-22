@@ -11,20 +11,20 @@ module Firebrew::Firefox
     
     context 'when the indicated firefox command by the `config[:firefox]` not existed' do
       let(:config){super().merge firefox: 'firefox/not/existed/path'}
-      it { expect{subject}.to raise_error(Firebrew::FirefoxCommandError) }
+      it { expect{subject}.to raise_error(Firebrew::FirefoxCommandError, 'Firefox command not found: firefox/not/existed/path') }
     end
     
     context 'when the indicated command by the `config[:firefox]` was not firefox' do
       let(:executer) do
         double('executer', exec: ['Other program', 0])
       end
-      it { expect{subject}.to raise_error(Firebrew::FirefoxCommandError) }
+      it { expect{subject}.to raise_error(Firebrew::FirefoxCommandError, 'Command is not Firefox: %{firefox}' % self.config) }
       
       describe 'command status' do
         let(:executer) do
           double('executer', exec: ['Fake Mozilla Firefox', 1])
         end
-        it { expect{subject}.to raise_error(Firebrew::FirefoxCommandError) }
+        it { expect{subject}.to raise_error(Firebrew::FirefoxCommandError, 'Command is not Firefox: %{firefox}' % self.config) }
       end
     end
     

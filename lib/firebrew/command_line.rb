@@ -62,7 +62,7 @@ module Firebrew
       self.register_global_options(opt)
       self.class.opt_operation(opt, :order!, args)
       
-      case args.shift
+      case command = args.shift
       when 'install' then
         self.class.opt_operation(opt, :permute!, args)
         self.arguments[:command] = :install
@@ -91,7 +91,7 @@ module Firebrew
         self.class.opt_operation(opt, :permute, ['--help'])
       
       else
-        raise Firebrew::CommandLineError
+        raise Firebrew::CommandLineError, "Invalid command: #{command}"
       end
     end
     
@@ -118,8 +118,10 @@ module Firebrew
     def self.opt_operation(opt, operation, args)
       begin
         opt.send(operation, args)
-      rescue OptionParser::InvalidOption
-        raise Firebrew::CommandLineError
+      rescue OptionParser::InvalidOption => e
+        m = e.message
+        m[0] = m[0].upcase
+        raise Firebrew::CommandLineError, m
       end
     end
     

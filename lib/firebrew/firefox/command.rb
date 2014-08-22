@@ -13,10 +13,10 @@ module Firebrew::Firefox
       @executer = executer
       begin
         result = @executer.exec('%{firefox} --version' % self.escaped_config)
-        raise Firebrew::FirefoxCommandError unless result[0] =~ /Mozilla Firefox/
-        raise Firebrew::FirefoxCommandError unless result[1] == 0
+        raise Firebrew::FirefoxCommandError, 'Command is not Firefox: %{firefox}' % @config unless result[0] =~ /Mozilla Firefox/
+        raise Firebrew::FirefoxCommandError, 'Command is not Firefox: %{firefox}' % @config unless result[1] == 0
       rescue SystemCallError
-        raise Firebrew::FirefoxCommandError
+        raise Firebrew::FirefoxCommandError, 'Firefox command not found: %{firefox}' % @config
       end
     end
     

@@ -175,7 +175,7 @@ module Firebrew
             self.instance.install(self.search_params)
           end
           
-          it { expect{subject}.to raise_error(Firebrew::OperationAlreadyCompletedError) }
+          it { expect{subject}.to raise_error(Firebrew::OperationAlreadyCompletedError, 'Already installed!') }
         end
       end
       
@@ -196,7 +196,7 @@ module Firebrew
             self.instance.uninstall(term: 'not-existed-extension')
           end
           
-          it { expect{subject}.to raise_error(Firebrew::OperationAlreadyCompletedError) }
+          it { expect{subject}.to raise_error(Firebrew::OperationAlreadyCompletedError, 'Already uninstalled!') }
         end
       end
     end

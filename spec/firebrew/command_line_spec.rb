@@ -10,12 +10,12 @@ module Firebrew
     
     context 'when the command was invalid' do
       let(:args){'invalid-command'}
-      it { expect{subject}.to raise_error(Firebrew::CommandLineError) }
+      it { expect{subject}.to raise_error(Firebrew::CommandLineError, 'Invalid command: invalid-command') }
     end
     
     context 'when the options was invalid' do
       let(:args){'install --invalid-option'}
-      it { expect{subject}.to raise_error(Firebrew::CommandLineError) }
+      it { expect{subject}.to raise_error(Firebrew::CommandLineError, 'Invalid option: --invalid-option') }
     end
     
     describe '#arguments()' do

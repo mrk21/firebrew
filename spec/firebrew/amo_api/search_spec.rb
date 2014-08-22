@@ -60,7 +60,7 @@ module Firebrew::AmoApi
       
       context 'when results were empty' do
         let(:fixture){'empty.xml'}
-        it { expect{subject}.to raise_error(Firebrew::ExtensionNotFoundError) }
+        it { expect{subject}.to raise_error(Firebrew::ExtensionNotFoundError, 'Extension not found!') }
       end
     end
   end

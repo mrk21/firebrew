@@ -54,7 +54,7 @@ module Firebrew
     
     def install(params={})
       extension = self.profile.extensions.find(params[:term])
-      raise Firebrew::OperationAlreadyCompletedError unless extension.nil?
+      raise Firebrew::OperationAlreadyCompletedError, 'Already installed!' unless extension.nil?
       result = self.fetch_api(term: params[:term], max: 1).first
       self.profile.extensions.install(result)
     end
@@ -63,7 +63,7 @@ module Firebrew
       begin
         self.profile.extensions.find!(params[:term]).delete
       rescue Firebrew::ExtensionNotFoundError
-        raise Firebrew::OperationAlreadyCompletedError
+        raise Firebrew::OperationAlreadyCompletedError, 'Already uninstalled!'
       end
     end
     

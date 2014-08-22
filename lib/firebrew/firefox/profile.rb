@@ -10,7 +10,7 @@ module Firebrew::Firefox
       def initialize(params={})
         @base_dir = params[:base_dir]
         @data_file = params[:data_file] || 'profiles.ini'
-        raise Firebrew::ProfilesFileNotFoundError unless File.exists? self.data_path
+        raise Firebrew::ProfilesFileNotFoundError, '"profiles.ini" not found!' unless File.exists? self.data_path
       end
       
       def all
@@ -31,7 +31,7 @@ module Firebrew::Firefox
       
       def find!(name)
         result = self.find(name)
-        raise Firebrew::ProfileNotFoundError if result.nil?
+        raise Firebrew::ProfileNotFoundError, 'Profile not found!' if result.nil?
         result
       end
       
