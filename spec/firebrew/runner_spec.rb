@@ -170,12 +170,14 @@ module Firebrew
         
         context 'when the `params[:term]` existed' do
           subject do
-            extensions_double = double('extensions', install: nil, find: Firefox::BasicExtension.new)
+            extensions_double = double('extensions', install: nil, find: Firefox::BasicExtension.new(name: self.extension_name))
             self.instance.profile = double('profile', extensions: extensions_double)
             self.instance.install(self.search_params)
           end
           
-          it { expect{subject}.to raise_error(Firebrew::OperationAlreadyCompletedError, 'Already installed!') }
+          let(:extension_name){'hoge'}
+          
+          it { expect{subject}.to raise_error(Firebrew::OperationAlreadyCompletedError, "Already installed: #{self.extension_name}") }
         end
       end
       
@@ -183,8 +185,10 @@ module Firebrew
         subject do
           extensions_double = double('extensions', find!: double('ext', delete: nil))
           self.instance.profile = double('profile', extensions: extensions_double)
-          self.instance.uninstall(term: 'not-existed-extension')
+          self.instance.uninstall(term: self.extension_name)
         end
+        
+        let(:extension_name){'existed-extension'}
         
         it { expect{subject}.to_not raise_error }
         
@@ -193,10 +197,12 @@ module Firebrew
             extensions_double = double('extensions')
             allow(extensions_double).to receive(:find!).and_raise(Firebrew::ExtensionNotFoundError)
             self.instance.profile = double('profile', extensions: extensions_double)
-            self.instance.uninstall(term: 'not-existed-extension')
+            self.instance.uninstall(term: self.extension_name)
           end
           
-          it { expect{subject}.to raise_error(Firebrew::OperationAlreadyCompletedError, 'Already uninstalled!') }
+          let(:extension_name){'not-existed-extension'}
+          
+          it { expect{subject}.to raise_error(Firebrew::OperationAlreadyCompletedError, "Already uninstalled: #{self.extension_name}") }
         end
       end
     end

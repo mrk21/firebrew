@@ -52,7 +52,7 @@ module Firebrew::AmoApi
     end
     
     describe '::fetch!(params)' do
-      subject {Search.fetch! term: ''}
+      subject {Search.fetch! term: 'aa'}
       
       it { is_expected.to be_instance_of(Array) }
       it { expect(subject.size).to eq(3) }
@@ -60,7 +60,7 @@ module Firebrew::AmoApi
       
       context 'when results were empty' do
         let(:fixture){'empty.xml'}
-        it { expect{subject}.to raise_error(Firebrew::ExtensionNotFoundError, 'Extension not found!') }
+        it { expect{subject}.to raise_error(Firebrew::ExtensionNotFoundError, 'Extension not found: like "aa"') }
       end
     end
   end

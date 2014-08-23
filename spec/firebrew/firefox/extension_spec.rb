@@ -84,7 +84,7 @@ module Firebrew::Firefox
         
         context 'when the extension corresponding to the `name` not existed' do
           let(:name){'hoge'}
-          it { expect{subject}.to raise_error(Firebrew::ExtensionNotFoundError, 'Extension not found!') }
+          it { expect{subject}.to raise_error(Firebrew::ExtensionNotFoundError, 'Extension not found: hoge') }
         end
       end
       

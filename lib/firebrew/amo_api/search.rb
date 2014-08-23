@@ -34,7 +34,7 @@ module Firebrew::AmoApi
     
     def self.fetch!(params={})
       results = self.fetch(params)
-      raise Firebrew::ExtensionNotFoundError, 'Extension not found!' if results.empty?
+      raise Firebrew::ExtensionNotFoundError, %[Extension not found: like "#{params[:term]}"] if results.empty?
       results
     end
     
