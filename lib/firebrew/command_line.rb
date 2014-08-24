@@ -37,22 +37,7 @@ module Firebrew
       command = args.shift.to_s.intern
       
       case command
-      when :install then
-        parser.permute!(args)
-        self.arguments[:command] = command
-        self.arguments[:params][:term] = args[0]
-        
-      when :uninstall then
-        parser.permute!(args)
-        self.arguments[:command] = command
-        self.arguments[:params][:term] = args[0]
-        
-      when :info then
-        parser.permute!(args)
-        self.arguments[:command] = command
-        self.arguments[:params][:term] = args[0]
-        
-      when :search then
+      when :install, :uninstall, :info, :search then
         parser.permute!(args)
         self.arguments[:command] = command
         self.arguments[:params][:term] = args[0]
