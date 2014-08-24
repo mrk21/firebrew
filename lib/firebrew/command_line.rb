@@ -16,7 +16,7 @@ module Firebrew
         $stderr.puts e.message
         exit e.status
       rescue SystemExit => e
-        exit 1
+        exit 0
       rescue Exception => e
         $stderr.puts e.inspect
         $stderr.puts e.backtrace

@@ -149,7 +149,7 @@ module Firebrew
       
       context 'when the `SystemExit` was thrown' do
         let(:exeption){abort 'abort message'}
-        it { expect(subject[0]).to eq(1) }
+        it { expect(subject[0]).to eq(0) }
         it { expect(subject[1]).to eq('abort message') }
       end
       
