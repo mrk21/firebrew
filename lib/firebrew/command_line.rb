@@ -118,7 +118,7 @@ module Firebrew
     def self.opt_operation(opt, operation, args)
       begin
         opt.send(operation, args)
-      rescue OptionParser::InvalidOption => e
+      rescue OptionParser::ParseError => e
         m = e.message
         m[0] = m[0].upcase
         raise Firebrew::CommandLineError, m

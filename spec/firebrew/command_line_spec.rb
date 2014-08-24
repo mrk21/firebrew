@@ -14,8 +14,15 @@ module Firebrew
     end
     
     context 'when the options was invalid' do
-      let(:args){'install --invalid-option'}
-      it { expect{subject}.to raise_error(Firebrew::CommandLineError, 'Invalid option: --invalid-option') }
+      describe 'invalid option' do
+        let(:args){'install --invalid-option'}
+        it { expect{subject}.to raise_error(Firebrew::CommandLineError, 'Invalid option: --invalid-option') }
+      end
+      
+      describe 'MissingArgument' do
+        let(:args){'install --firefox'}
+        it { expect{subject}.to raise_error(Firebrew::CommandLineError, 'Missing argument: --firefox') }
+      end
     end
     
     describe '#arguments()' do
