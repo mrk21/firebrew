@@ -3,7 +3,7 @@ require 'firebrew/runner'
 
 module Firebrew
   class CommandLine
-    attr_accessor :arguments
+    attr_reader :arguments
     
     def self.execute
       begin
@@ -27,72 +27,51 @@ module Firebrew
     end
     
     def initialize(args=[])
-      opt = OptionParser.new
-      opt.version = Firebrew::VERSION
-      opt.banner = <<-USAGE.split(/\n/).map{|v| v.gsub(/^(  ){4}/,'')}.join("\n")
-        Usage: firebrew [--help] [--version]
-               [--base-dir=<path>] [--profile=<name>] [--firefox=<path>]
-               <command> [<args>]
-        
-        commands:
-            install:
-                firebrew install <extension-name>
-            
-            uninstall:
-                firebrew uninstall <extension-name>
-            
-            info:
-                firebrew info <extension-name>
-            
-            search:
-                firebrew search <term>
-            
-            list:
-                firebrew list
-        
-        options:
-      USAGE
-      
-      self.arguments = {
+      @arguments = {
         command: nil,
         params: {},
         config: {}
       }
+      parser = self.option_parser
+      parser.order!(args)
+      command = args.shift.to_s.intern
       
-      self.register_global_options(opt)
-      self.class.opt_operation(opt, :order!, args)
-      
-      case command = args.shift
-      when 'install' then
-        self.class.opt_operation(opt, :permute!, args)
-        self.arguments[:command] = :install
+      case command
+      when :install then
+        parser.permute!(args)
+        self.arguments[:command] = command
         self.arguments[:params][:term] = args[0]
         
-      when 'uninstall' then
-        self.class.opt_operation(opt, :permute!, args)
-        self.arguments[:command] = :uninstall
+      when :uninstall then
+        parser.permute!(args)
+        self.arguments[:command] = command
         self.arguments[:params][:term] = args[0]
         
-      when 'info' then
-        self.class.opt_operation(opt, :permute!, args)
-        self.arguments[:command] = :info
+      when :info then
+        parser.permute!(args)
+        self.arguments[:command] = command
         self.arguments[:params][:term] = args[0]
         
-      when 'search' then
-        self.class.opt_operation(opt, :permute!, args)
-        self.arguments[:command] = :search
+      when :search then
+        parser.permute!(args)
+        self.arguments[:command] = command
         self.arguments[:params][:term] = args[0]
         
-      when 'list' then
-        self.class.opt_operation(opt, :permute!, args)
-        self.arguments[:command] = :list
+      when :list then
+        parser.permute!(args)
+        self.arguments[:command] = command
         
-      when nil then
-        self.class.opt_operation(opt, :permute, ['--help'])
-      
+      when :'' then
+        parser.permute(['--help'])
+        
       else
         raise Firebrew::CommandLineError, "Invalid command: #{command}"
       end
+      
+    rescue OptionParser::ParseError => e
+      m = e.message
+      m[0] = m[0].upcase
+      raise Firebrew::CommandLineError, m
     end
     
     def execute
@@ -115,28 +94,48 @@ module Firebrew
     
     protected
     
-    def self.opt_operation(opt, operation, args)
+    def option_parser
+      parser = OptionParser.new
+      parser.version = Firebrew::VERSION
+      parser.banner = <<-USAGE.split(/\n/).map{|v| v.gsub(/^(  ){4}/,'')}.join("\n")
+        Usage: firebrew [--help] [--version]
+               [--base-dir=<path>] [--profile=<name>] [--firefox=<path>]
+               <command> [<args>]
+        
+        commands:
+            install:
+                firebrew install <extension-name>
+            
+            uninstall:
+                firebrew uninstall <extension-name>
+            
+            info:
+                firebrew info <extension-name>
+            
+            search:
+                firebrew search <term>
+            
+            list:
+                firebrew list
+      USAGE
+      
+      parser.separator ''
+      parser.separator 'options:'
       begin
-        opt.send(operation, args)
-      rescue OptionParser::ParseError => e
-        m = e.message
-        m[0] = m[0].upcase
-        raise Firebrew::CommandLineError, m
-      end
-    end
-    
-    def register_global_options(opt)
-      opt.on('-d <path>','--base-dir=<path>','Firefox profiles.ini directory') do |v|
-        self.arguments[:config][:base_dir] = v
-      end
-      
-      opt.on('-p <name>','--profile=<name>','Firefox profile name') do |v|
-        self.arguments[:config][:profile] = v
+        parser.on('-d <path>','--base-dir=<path>','Firefox profiles.ini directory') do |v|
+          self.arguments[:config][:base_dir] = v
+        end
+        
+        parser.on('-p <name>','--profile=<name>','Firefox profile name') do |v|
+          self.arguments[:config][:profile] = v
+        end
+        
+        parser.on('-f <path>','--firefox=<path>','Firefox command path') do |v|
+          self.arguments[:config][:firefox] = v
+        end
       end
       
-      opt.on('-f <path>','--firefox=<path>','Firefox command path') do |v|
-        self.arguments[:config][:firefox] = v
-      end
+      parser
     end
   end
 end
