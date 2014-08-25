@@ -53,7 +53,7 @@ module Firebrew::AmoApi
         end
       end
       
-      context 'when occured a Faraday exception' do
+      context 'when occurred a network error' do
         let(:stub) do
           receive(:get).and_raise(Faraday::ConnectionFailed, 'message')
         end
