@@ -8,6 +8,7 @@ module Firebrew
   class ExtensionNotFoundError < Error; end
   class FirefoxCommandError < Error; end
   class CommandLineError < Error; end
+  class NetworkError < Error; end
   class OperationAlreadyCompletedError < Error; def status; 2 end end
 end
 

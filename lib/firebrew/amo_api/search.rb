@@ -27,9 +27,15 @@ module Firebrew::AmoApi
     
     def self.fetch(params={})
       response = self.connection.get(self.path params)
+      raise Firebrew::NetworkError, "Invalid HTTP status: #{response.status}" unless response.status == 200
       dom = REXML::Document.new response.body
       addons = REXML::XPath.match(dom, '/searchresults/addon')
       addons.map{|v| Search.new v}
+      
+    rescue Faraday::Error => e
+      m = e.message
+      m[0] = m[0].upcase
+      raise Firebrew::NetworkError, m
     end
     
     def self.fetch!(params={})

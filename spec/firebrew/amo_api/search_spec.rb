@@ -3,14 +3,17 @@ require 'spec_helper'
 module Firebrew::AmoApi
   describe Firebrew::AmoApi::Search do
     before do
-      response = File.read("spec/fixtures/amo_api/search/#{self.fixture}")
-      
       Search.connection = double(:connection)
-      allow(Search.connection).to receive(:get).and_return(OpenStruct.new body: response)
+      allow(Search.connection).to self.stub
     end
     
     after do
       Search.connection = nil
+    end
+    
+    let(:stub) do
+      response = File.read("spec/fixtures/amo_api/search/#{self.fixture}")
+      receive(:get).and_return(OpenStruct.new body: response, status: 200)
     end
     
     let(:fixture){'base.xml'}
@@ -48,6 +51,22 @@ module Firebrew::AmoApi
           expect(subject[0].guid).to eq('hoge-ja@example.org')
           expect(subject[0].name).to eq('hoge')
         end
+      end
+      
+      context 'when occured a Faraday exception' do
+        let(:stub) do
+          receive(:get).and_raise(Faraday::ConnectionFailed, 'message')
+        end
+        
+        it { expect{subject}.to raise_error(Firebrew::NetworkError, 'Message') }
+      end
+      
+      context 'when a response HTTP status was not 200' do
+        let(:stub) do
+          receive(:get).and_return(OpenStruct.new body: '', status: 404)
+        end
+        
+        it { expect{subject}.to raise_error(Firebrew::NetworkError, 'Invalid HTTP status: 404') }
       end
     end
     

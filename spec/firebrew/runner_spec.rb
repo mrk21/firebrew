@@ -151,7 +151,7 @@ module Firebrew
         FileUtils.cp './spec/fixtures/firefox/profile/base.ini', './tmp/profiles.ini'
         response = File.read("./spec/fixtures/amo_api/search/base.xml")
         AmoApi::Search.connection = double(:connection)
-        allow(AmoApi::Search.connection).to receive(:get).and_return(OpenStruct.new body: response)
+        allow(AmoApi::Search.connection).to receive(:get).and_return(OpenStruct.new body: response, status: 200)
       end
       
       after do
