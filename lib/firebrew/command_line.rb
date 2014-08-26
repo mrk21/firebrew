@@ -80,47 +80,114 @@ module Firebrew
     protected
     
     def option_parser
+      desc = lambda do |str|
+        lines = str.split(/\n/)
+        indent = lines.map{|v| v.match(/^ +/).to_a[0].to_s.length}.min
+        lines.map{|v| v[indent..-1].rstrip}.join("\n")
+      end
+      
+      summary = lambda do |parser, name, description, pos|
+        result = ' '*100
+        result[0] = name.to_s
+        result[pos+1] = desc[description]
+        result = parser.summary_indent + result.rstrip
+        parser.separator result
+      end
+      
       parser = OptionParser.new
       parser.version = Firebrew::VERSION
-      parser.banner = <<-USAGE.split(/\n/).map{|v| v.gsub(/^(  ){4}/,'')}.join("\n")
+      parser.summary_indent = ' '*3
+      parser.summary_width = 25
+      parser.banner = desc[<<-DESC]
         Usage: firebrew [--help] [--version]
                [--base-dir=<path>] [--profile=<name>] [--firefox=<path>]
                <command> [<args>]
+      DESC
+      
+      parser.separator ''
+      parser.separator 'commands:'
+      begin
+        pos = 11
         
-        commands:
-            install:
-                firebrew install <extension-name>
-            
-            uninstall:
-                firebrew uninstall <extension-name>
-            
-            info:
-                firebrew info <extension-name>
-            
-            search:
-                firebrew search <term>
-            
-            list:
-                firebrew list
-      USAGE
+        summary[parser, :install, <<-DESC, pos]
+          Install the Firefox extension
+        DESC
+        
+        summary[parser, :uninstall, <<-DESC, pos]
+          Uninstall the Firefox extension
+        DESC
+        
+        summary[parser, :info, <<-DESC, pos]
+          Show detail information of the Firefox extension
+        DESC
+        
+        summary[parser, :search, <<-DESC, pos]
+          Search Firefox extensions
+        DESC
+        
+        summary[parser, :list, <<-DESC, pos]
+          Enumerate the installed Firefox extensions
+        DESC
+      end
       
       parser.separator ''
       parser.separator 'options:'
       begin
-        parser.on('-d <path>','--base-dir=<path>','Firefox profiles.ini directory') do |v|
+        parser.on('-d <path>','--base-dir=<path>', String, desc[<<-DESC]) do |v|
+          Firefox profiles.ini directory
+        DESC
           self.arguments[:config][:base_dir] = v
         end
         
-        parser.on('-p <name>','--profile=<name>','Firefox profile name') do |v|
+        parser.on('-p <name>','--profile=<name>', String, desc[<<-DESC]) do |v|
+          Firefox profile name
+        DESC
           self.arguments[:config][:profile] = v
         end
         
-        parser.on('-f <path>','--firefox=<path>','Firefox command path') do |v|
+        parser.on('-f <path>','--firefox=<path>', String, desc[<<-DESC]) do |v|
+          Firefox command path
+        DESC
           self.arguments[:config][:firefox] = v
         end
       end
       
-      parser
+      parser.separator ''
+      begin
+        parser.on('-h', '--help', desc[<<-DESC]) do
+          Show this message
+        DESC
+          puts parser.help
+          exit
+        end
+        
+        parser.on('-v', '--version', desc[<<-DESC]) do
+          Show version
+        DESC
+          puts parser.ver
+          exit
+        end
+      end
+      
+      parser.separator ''
+      parser.separator 'return value:'
+      begin
+        pos = 3
+        
+        summary[parser, '0', <<-DESC, pos]
+          Success
+        DESC
+        
+        summary[parser, '1', <<-DESC, pos]
+          Error
+        DESC
+        
+        summary[parser, '2', <<-DESC, pos]
+          No operation
+        DESC
+      end
+      
+      return parser
     end
   end
 end
