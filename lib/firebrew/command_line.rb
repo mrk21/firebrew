@@ -72,6 +72,7 @@ module Firebrew
       when :info then
         result = runner.send(self.arguments[:command], self.arguments[:params])
         puts result.data
+        
       else
         runner.send(self.arguments[:command], self.arguments[:params])
       end
