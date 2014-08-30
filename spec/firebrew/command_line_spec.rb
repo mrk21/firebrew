@@ -111,6 +111,35 @@ module Firebrew
           )
         end
       end
+      
+      describe 'profile command' do
+        let(:args){'profile'}
+        it 'should parse' do
+          is_expected.to eq(
+            command: :profile,
+            params: {},
+            config: {}
+          )
+        end
+        
+        context 'with options' do
+          let(:args){'profile -a name --attribute=is_default'}
+          it 'should parse' do
+            is_expected.to eq(
+              command: :profile,
+              params: {
+                attribute: 'is_default'
+              },
+              config: {}
+            )
+          end
+          
+          context 'with invalid options' do
+            let(:args){'profile -a hoge'}
+            it { expect{subject}.to raise_error(Firebrew::CommandLineError, 'Invalid argument: -a hoge') }
+          end
+        end
+      end
     end
     
     describe '::execute(&block)' do

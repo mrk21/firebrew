@@ -1,4 +1,5 @@
 require 'optparse'
+require 'erb'
 require 'firebrew/runner'
 
 module Firebrew
@@ -63,6 +64,10 @@ module Firebrew
           self.summary(parser, :list, <<-DESC, pos)
             Enumerate the installed Firefox extensions
           DESC
+          
+          self.summary(parser, :profile, <<-DESC, pos)
+            Show the profile information
+          DESC
         end
       end
       
@@ -108,6 +113,30 @@ module Firebrew
         subcommand_parser.permute!(args)
         self.arguments[:command] = command
         
+      when :profile then
+        subcommand_parser = self.option_parser do |parser|
+          parser.summary_width = 30
+          parser.banner = self.desc(<<-DESC)
+            Usage: firebrew [--help] [--version]
+                   [--base-dir=<path>] [--profile=<name>] [--firefox=<path>]
+                   #{command} [--attribute=<attr-name>]
+          DESC
+          
+          parser.separator ''
+          parser.separator 'options:'
+          begin
+            chooses = %r[#{Firebrew::Firefox::Profile.attributes.join('|')}]
+            parser.on('-a <attr-name>','--attribute=<attr-name>', chooses, self.desc(<<-DESC)) do |v|
+              The name of the attribute which want to display
+            DESC
+              self.arguments[:params][:attribute] = v
+            end
+          end
+        end
+        
+        subcommand_parser.permute!(args)
+        self.arguments[:command] = command
+        
       when :'' then
         global_parser.permute(['--help'])
         
@@ -134,6 +163,22 @@ module Firebrew
       when :info then
         result = runner.send(self.arguments[:command], self.arguments[:params])
         puts result.data
+        
+      when :profile then
+        r = runner.profile
+        attr = self.arguments[:params][:attribute]
+        if attr.nil? then
+          attrs = r.class.attributes
+          puts ERB.new(self.desc(<<-XML),nil,'-').result(binding)
+            <profile>
+            <% attrs.each do |attr| -%>
+              <<%= attr %>><%= r.send(attr) %></<%= attr %>>
+            <% end -%>
+            </profile>
+          XML
+        else
+          puts r.send(attr)
+        end
         
       else
         runner.send(self.arguments[:command], self.arguments[:params])
