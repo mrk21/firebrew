@@ -71,7 +71,25 @@ Enumerate the installed extensions:
 $ firebrew list
 ```
 
-### options
+#### profile
+
+Show the profile information:
+
+```bash
+$ firebrew profile [--attribute=<attr-name>]
+```
+
+##### options
+
+###### --attribute
+
+The name of the attribute which want to display:
+
+```bash
+-a <attr-name>, --attribute=<attr-name>
+```
+
+### global options
 
 #### --base-dir
 
