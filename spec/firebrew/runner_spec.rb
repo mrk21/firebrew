@@ -1,13 +1,12 @@
 require 'spec_helper'
+require 'os'
 
 module Firebrew
   describe Firebrew::Runner do
-    describe '::default_config(platform)' do
+    describe '::default_config' do
       subject do
-        Runner.default_config(self.platform)
+        Runner.default_config
       end
-      
-      let(:platform){'x86_64-darwin13.0'}
       
       before do
         ENV['FIREBREW_FIREFOX_PROFILE_BASE_DIR'] = nil
@@ -21,8 +20,7 @@ module Firebrew
         ENV['FIREBREW_FIREFOX'] = nil
       end
       
-      context 'when the `platform` was "MacOS"' do
-        let(:platform){'x86_64-darwin13.0'}
+      if OS.mac? then
         it do
           is_expected.to eq(
             base_dir: '~/Library/Application Support/Firefox',
@@ -31,10 +29,8 @@ module Firebrew
             os: 'darwin'
           )
         end
-      end
-      
-      context 'when the `platform` was "Linux"' do
-        let(:platform){'x86_64-linux'}
+        
+      elsif OS.linux? then
         it do
           is_expected.to eq(
             base_dir: '~/.mozilla/firefox',
@@ -43,11 +39,8 @@ module Firebrew
             os: 'linux'
           )
         end
-      end
-      
-      context 'when the `platform` was "Windows"' do
-        let(:platform){'x64-mingw32'}
         
+      elsif OS.windows? then
         before do
           ENV['APPDATA'] = nil
           ENV['PROGRAMFILES'] = nil
@@ -123,13 +116,10 @@ module Firebrew
           ENV['FIREBREW_FIREFOX'] = 'path/to/firefox'
         end
         
-        it do
-          is_expected.to eq(
-            base_dir: 'path/to/profile_base_directory',
-            firefox: 'path/to/firefox',
-            profile: 'profile-name',
-            os: 'darwin'
-          )
+        it 'should set the default_config' do
+          expect(subject[:base_dir]).to eq('path/to/profile_base_directory')
+          expect(subject[:firefox]).to eq('path/to/firefox')
+          expect(subject[:profile]).to eq('profile-name')
         end
       end
     end
@@ -141,7 +131,7 @@ module Firebrew
         Runner.new(
           base_dir: './tmp',
           data_file: 'profiles.ini',
-          firefox: ENV['OS'].nil? ? './spec/double/firefox.rb' : './spec/double/firefox.bat'
+          firefox: OS.windows? ? './spec/double/firefox.bat' : './spec/double/firefox.rb'
         )
       end
       

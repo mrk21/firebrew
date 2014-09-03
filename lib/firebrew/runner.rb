@@ -7,25 +7,24 @@ module Firebrew
   class Runner
     attr_accessor :config, :profile
     
-    def self.default_config(platform = RUBY_PLATFORM)
+    def self.default_config
       result = {
         base_dir: ENV['FIREBREW_FIREFOX_PROFILE_BASE_DIR'],
         firefox: ENV['FIREBREW_FIREFOX'],
         profile: ENV['FIREBREW_FIREFOX_PROFILE'] || 'default',
       }
       
-      case platform
-      when /darwin/ then
+      if OS.mac? then
         result[:base_dir] ||= '~/Library/Application Support/Firefox'
         result[:firefox] ||= '/Applications/Firefox.app/Contents/MacOS/firefox-bin'
         result[:os] = 'darwin'
         
-      when /linux/ then
+      elsif OS.linux? then
         result[:base_dir] ||= '~/.mozilla/firefox'
         result[:firefox] ||= '/usr/bin/firefox'
         result[:os] = 'linux'
         
-      when /mswin(?!ce)|mingw|cygwin|bccwin/ then
+      elsif OS.windows? then
         appdata = ENV['APPDATA'].to_s.gsub('\\','/')
         programfiles = (ENV['PROGRAMFILES(X86)'] || ENV['PROGRAMFILES']).to_s.gsub('\\','/')
         result[:base_dir] ||= File.join(appdata, 'Mozilla/Firefox')

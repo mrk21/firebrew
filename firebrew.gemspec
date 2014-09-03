@@ -25,4 +25,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "inifile", "~> 2.0"
   spec.add_dependency "rubyzip", "~> 1.1"
   spec.add_dependency "faraday", "~> 0.9"
+  spec.add_dependency "os", "~> 0.9"
 end
