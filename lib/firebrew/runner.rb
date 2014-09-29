@@ -35,8 +35,9 @@ module Firebrew
       result
     end
     
-    def initialize(config={})
+    def initialize(config={}, is_displaying_progress = false)
       self.config = self.class.default_config.merge(config)
+      @is_displaying_progress = is_displaying_progress
       
       @profile_manager = Firefox::Profile::Manager.new(
         base_dir: self.config[:base_dir],
@@ -55,7 +56,7 @@ module Firebrew
       extension = self.profile.extensions.find(params[:term])
       raise Firebrew::OperationAlreadyCompletedError, "Already installed: #{params[:term]}" unless extension.nil?
       result = self.fetch_api(term: params[:term], max: 1).first
-      self.profile.extensions.install(result)
+      self.profile.extensions.install(result, @is_displaying_progress)
     end
     
     def uninstall(params={})

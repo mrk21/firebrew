@@ -88,14 +88,15 @@ module Firebrew::Firefox
         end
       end
       
-      describe '#install(extension)' do
+      describe '#install(extension[, is_displaying_progress])' do
         subject { self.instance.install(self.extension) }
         
         let(:extension) do
-          Extension.new({
-            guid: 'hoge@example.org',
-            uri: File.join(Dir.pwd, 'spec/fixtures/firefox/extension/unpack_false.xpi')
-          }, self.manager)
+          Extension.new({guid: 'hoge@example.org', uri: self.extension_uri}, self.manager)
+        end
+        
+        let(:extension_uri) do
+          './spec/fixtures/firefox/extension/unpack_false.xpi'
         end
         
         let(:expected_path) do
@@ -104,7 +105,8 @@ module Firebrew::Firefox
         
         it 'should copy the `path/to/profile/extensions/<GUID>.xpi`' do
           subject
-          expect(File.exists? self.expected_path).to be_truthy
+          md5, path = File.read(self.extension_uri.pathmap('%X.md5')).split(/\s+/)
+          expect(Digest::MD5.hexdigest(File.read self.expected_path)).to eq(md5)
         end
         
         it 'should add the `extension` extension' do
@@ -120,13 +122,14 @@ module Firebrew::Firefox
         
         context 'when an `uri` of the `extension` was equal or greater than two' do
           let(:extension) do
-            Extension.new({
-              guid: 'hoge@example.org',
-              uri: [
-                File.join(Dir.pwd, 'spec/fixtures/firefox/extension/unpack_false.xpi'),
-                File.join(Dir.pwd, 'spec/fixtures/firefox/extension/not_exists.xpi'),
-              ]
-            }, self.manager)
+            Extension.new({guid: 'hoge@example.org', uri: self.extension_uri}, self.manager)
+          end
+          
+          let(:extension_uri) do
+            [
+              './spec/fixtures/firefox/extension/unpack_false.xpi',
+              './spec/fixtures/firefox/extension/not_exists.xpi'
+            ]
           end
           
           it 'should not throw exceptions' do
@@ -136,15 +139,17 @@ module Firebrew::Firefox
         
         context 'when an `em:unpack` value of the `install.rdf` in the XPI package not exsisted' do
           let(:extension) do
-            Extension.new({
-              guid: 'hoge@example.org',
-              uri: File.join(Dir.pwd, 'spec/fixtures/firefox/extension/unpack_null.xpi')
-            }, self.manager)
+            Extension.new({guid: 'hoge@example.org', uri: self.extension_uri}, self.manager)
+          end
+          
+          let(:extension_uri) do
+            './spec/fixtures/firefox/extension/unpack_null.xpi'
           end
           
           it 'should copy the `path/to/profile/extensions/<GUID>.xpi`' do
             subject
-            expect(File.exists? self.expected_path).to be_truthy
+            md5, path = File.read(self.extension_uri.pathmap('%X.md5')).split(/\s+/)
+            expect(Digest::MD5.hexdigest(File.read self.expected_path)).to eq(md5)
           end
           
           it 'should add the `extension` extension' do
@@ -161,10 +166,11 @@ module Firebrew::Firefox
         
         context 'when an `em:unpack` value of the `install.rdf` in the XPI package was true' do
           let(:extension) do
-            Extension.new({
-              guid: 'hoge@example.org',
-              uri: './spec/fixtures/firefox/extension/unpack_true.xpi'
-            }, self.manager)
+            Extension.new({guid: 'hoge@example.org', uri: self.extension_uri}, self.manager)
+          end
+          
+          let(:extension_uri) do
+            './spec/fixtures/firefox/extension/unpack_true.xpi'
           end
           
           let(:expected_path) do
@@ -178,7 +184,7 @@ module Firebrew::Firefox
           
           it 'should unzip all files in the XPI package' do
             subject
-            md5list = File.read('./spec/fixtures/firefox/extension/unpack_true.md5')
+            md5list = File.read(self.extension_uri.pathmap('%X.md5'))
             Dir.chdir(self.expected_path) do
               md5list.each_line do |item|
                 md5, path = item.split(/\s+/)

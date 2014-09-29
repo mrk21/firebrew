@@ -151,7 +151,7 @@ module Firebrew
     end
     
     def execute
-      runner = Runner.new(self.arguments[:config])
+      runner = Runner.new(self.arguments[:config], true)
       
       case self.arguments[:command]
       when :search, :list then

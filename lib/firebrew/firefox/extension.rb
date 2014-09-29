@@ -4,6 +4,7 @@ require 'json'
 require 'rexml/document'
 require 'zip'
 require 'firebrew/firefox/basic_extension'
+require 'firebrew/downloader'
 
 module Firebrew::Firefox
   class Extension < BasicExtension
@@ -39,35 +40,41 @@ module Firebrew::Firefox
         result
       end
       
-      def install(extension)
+      def install(extension, is_displaying_progress = false)
         dir = File.join(self.profile.path, 'extensions')
         FileUtils.mkdir_p dir
         
-        open([extension.uri].flatten.first, 'rb') do |r|
-          xpi = Zip::File.open(r)
-          install_manifests = xpi.find_entry('install.rdf')
-          install_manifests = install_manifests.get_input_stream.read
-          install_manifests = REXML::Document.new(install_manifests)
-          is_unpacking = REXML::XPath.match(install_manifests, '/RDF/Description/em:unpack/text()').first
-          is_unpacking = is_unpacking.nil? ? false : is_unpacking.value.strip == 'true'
-          
-          if is_unpacking then
-            extension.uri = File.join(dir, extension.guid)
-            FileUtils.mkdir_p(extension.uri)
-            xpi.each do |entry|
-              next if entry.ftype == :directory
-              content = entry.get_input_stream.read
-              Dir.chdir(extension.uri) do
-                FileUtils.mkdir_p File.dirname(entry.name)
-                File.write(entry.name, content)
-              end
-            end
-          else
-            extension.uri = '%s.xpi' % File.join(dir, extension.guid)
-            open(extension.uri, 'wb') do |w|
-              w.write r.read
+        uri = [extension.uri].flatten.first
+        extension.uri = '%s.xpi' % File.join(dir, extension.guid)
+        downloader = Firebrew::Downloader.new(
+          uri, extension.uri,
+          output: is_displaying_progress ? $stdout : nil
+        )
+        downloader.exec.join
+        
+        xpi = Zip::File.open(File.open extension.uri)
+        install_manifests = xpi.find_entry('install.rdf')
+        install_manifests = install_manifests.get_input_stream.read
+        install_manifests = REXML::Document.new(install_manifests)
+        is_unpacking = REXML::XPath.match(install_manifests, '/RDF/Description/em:unpack/text()').first
+        is_unpacking = is_unpacking.nil? ? false : is_unpacking.value.strip == 'true'
+        
+        if is_unpacking then
+          xpi_path = extension.uri
+          extension.uri = File.join(dir, extension.guid)
+          FileUtils.mkdir_p(extension.uri)
+          xpi.each do |entry|
+            next if entry.ftype == :directory
+            content = entry.get_input_stream.read
+            Dir.chdir(extension.uri) do
+              FileUtils.mkdir_p File.dirname(entry.name)
+              File.write(entry.name, content)
             end
           end
+          xpi.close
+          FileUtils.rm_rf(xpi_path)
+        else
+          xpi.close
         end
         
         self.add(extension)
