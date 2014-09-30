@@ -2,6 +2,7 @@ require 'fileutils'
 require 'open-uri'
 require 'json'
 require 'rexml/document'
+require 'rake/pathmap'
 require 'zip'
 require 'firebrew/firefox/basic_extension'
 require 'firebrew/downloader'
@@ -43,16 +44,15 @@ module Firebrew::Firefox
       def install(extension, is_displaying_progress = false)
         dir = File.join(self.profile.path, 'extensions')
         FileUtils.mkdir_p dir
+        xpi_path = '%s.xpi' % File.join(dir, extension.guid)
         
-        uri = [extension.uri].flatten.first
-        extension.uri = '%s.xpi' % File.join(dir, extension.guid)
-        downloader = Firebrew::Downloader.new(
-          uri, extension.uri,
-          output: is_displaying_progress ? $stdout : nil
-        )
-        downloader.exec.join
+        File.open(xpi_path,'wb') do |out|
+          uri = [extension.uri].flatten.first
+          pout = is_displaying_progress ? $stdout : nil
+          Firebrew::Downloader.new(uri, out, output: pout).exec
+        end
         
-        xpi = Zip::File.open(File.open extension.uri)
+        xpi = Zip::File.open(File.open(xpi_path,'rb'))
         install_manifests = xpi.find_entry('install.rdf')
         install_manifests = install_manifests.get_input_stream.read
         install_manifests = REXML::Document.new(install_manifests)
@@ -60,9 +60,9 @@ module Firebrew::Firefox
         is_unpacking = is_unpacking.nil? ? false : is_unpacking.value.strip == 'true'
         
         if is_unpacking then
-          xpi_path = extension.uri
-          extension.uri = File.join(dir, extension.guid)
+          extension.uri = xpi_path.pathmap('%X')
           FileUtils.mkdir_p(extension.uri)
+          
           xpi.each do |entry|
             next if entry.ftype == :directory
             content = entry.get_input_stream.read
@@ -71,9 +71,11 @@ module Firebrew::Firefox
               File.write(entry.name, content)
             end
           end
+          
           xpi.close
           FileUtils.rm_rf(xpi_path)
         else
+          extension.uri = xpi_path
           xpi.close
         end
         

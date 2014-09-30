@@ -11,16 +11,14 @@ module Firebrew
         uri = URI.parse(URI.encode uri)
       end
       
-      uri.path = '/' if uri.path.empty?
+      uri.normalize!
       
       case uri.scheme
       when 'http','https','file' then
         # do nothing
       when nil then
         uri.scheme = 'file'
-        if uri.path[0] != '/' then
-          uri.path = File.expand_path(uri.path)
-        end
+        uri.path = File.expand_path(uri.path)
       else
         raise Firebrew::NetworkError, "Don't support the scheme: #{uri.scheme}"
       end
@@ -28,13 +26,13 @@ module Firebrew
       uri
     end
     
-    attr_reader :uri, :save_to, :size, :received
-    
-    def initialize(uri, save_to, progress_bar_options={})
+    def initialize(uri, out, progress_options={})
       @uri = self.class.normalize_uri(uri)
-      @save_to = File.expand_path(save_to)
-      @progress_bar_options = progress_bar_options
-      
+      @out = out
+      @progress_options = progress_options
+    end
+    
+    def exec
       case @uri.scheme
       when 'http','https' then
         @size = loop do
@@ -45,20 +43,15 @@ module Firebrew
             @uri = self.class.normalize_uri(response['Location'])
             next
           end
-          break response['content-length'].to_i
+          break response['Content-Length'].to_i
         end
         
-        @exec_block = lambda do
-          progress_bar = self.create_progress_bar
-          
-          self.http_connection do |http, path|
-            open(@save_to, 'w') do |w|
-              http.get(path) do |chunk|
-                @received += chunk.size
-                progress_bar.progress = @received
-                w.write chunk
-              end
-            end
+        progress_bar = self.create_progress_bar
+        
+        self.http_connection do |http, path|
+          http.get(path) do |chunk|
+            progress_bar.progress += chunk.size
+            @out.write chunk
           end
         end
         
@@ -67,40 +60,24 @@ module Firebrew
           file.size
         end
         
-        @exec_block = lambda do
-          progress_bar = self.create_progress_bar
-          
-          self.file_connection do |file|
-            open(@save_to, 'wb') do |w|
-              loop do
-                chunk = file.read(1000)
-                break if chunk.nil?
-                @received += chunk.size
-                progress_bar.progress = @received
-                w.write chunk
-              end
-            end
+        progress_bar = self.create_progress_bar
+        
+        self.file_connection do |file|
+          loop do
+            chunk = file.read(1000)
+            break if chunk.nil?
+            progress_bar.progress += chunk.size
+            @out.write chunk
           end
         end
       end
-    end
-    
-    def exec
-      @received = 0
-      Thread.new &@exec_block
-    end
-    
-    def completed?
-      @size == @received
     end
     
     protected
     
     def http_connection(&block)
       Net::HTTP.start(@uri.host, @uri.port, use_ssl: @uri.scheme == 'https') do |http|
-        path = @uri.path
-        path += "?#{@uri.query}" unless @uri.query.nil?
-        block[http, path]
+        block[http, @uri.request_uri]
       end
     end
     
@@ -109,8 +86,12 @@ module Firebrew
     end
     
     def create_progress_bar
-      options = {title: 'Download'}
-      options.merge! @progress_bar_options
+      options = {
+        format: "%e |%B| [%j%%]",
+        progress_mark: '=',
+        remainder_mark: '･',
+      }
+      options.merge! @progress_options
       options.merge! total: @size
       options[:output] = File.open(File::NULL,'w') unless options[:output]
       ProgressBar.create(options)

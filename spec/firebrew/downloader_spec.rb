@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'fileutils'
 require 'stringio'
 require 'digest/md5'
 require 'webmock/rspec'
@@ -22,24 +21,24 @@ module Firebrew
       
       context 'when the uri path was empty' do
         let(:uri){'http://www.example.com'}
-        it 'path should be /' do
+        it 'path should be "/"' do
           expect(subject.path).to eq('/')
         end
       end
       
-      context 'when the uri scheme was http' do
+      context 'when the uri scheme was "http"' do
         let(:uri){'http://www.example.com/a/b.html'}
         let(:expected_uri){URI.parse('http://www.example.com/a/b.html')}
         it { is_expected.to eq(self.expected_uri) }
       end
       
-      context 'when the uri scheme was https' do
+      context 'when the uri scheme was "https"' do
         let(:uri){'https://www.example.com/a/b.html'}
         let(:expected_uri){URI.parse('https://www.example.com/a/b.html')}
         it { is_expected.to eq(self.expected_uri) }
       end
       
-      context 'when the uri scheme was file' do
+      context 'when the uri scheme was "file"' do
         let(:uri){'file:///a/b.html'}
         let(:expected_uri){URI.parse('file:///a/b.html')}
         it { is_expected.to eq(self.expected_uri) }
@@ -63,7 +62,7 @@ module Firebrew
         end
       end
       
-      context 'when the uri scheme was not http, https and file' do
+      context 'when the uri scheme was not "http", "https" and "file"' do
         let(:uri){'hoge:///a/b/c'}
         
         it 'should throw Firebrew::NetworkError' do
@@ -72,38 +71,27 @@ module Firebrew
       end
     end
     
-    describe '#initialize(uri, save_to[, progress_bar_options]) -> #exec()' do
+    describe '#initialize(uri, out[, progress_options]) -> #exec()' do
       before do
         self.before_callback[]
-        self.instance.exec.join
-      end
-      
-      after do
-        FileUtils.rm_f self.save_to
-      end
-      
-      let(:instance) do
-        Downloader.new(self.uri, self.save_to)
+        Downloader.new(self.uri, self.out).exec
+        self.out.rewind
       end
       
       let(:before_callback){->{}}
       let(:uri){''}
-      let(:save_to){'./tmp/downloaded'}
+      let(:out){StringIO.new}
       
-      context 'when the uri scheme was file' do
+      context 'when the uri scheme was "file"' do
         let(:uri){'./spec/fixtures/firefox/extension/unpack_false.xpi'}
         
-        it 'should download a file which is referenced by the uri to the save_to' do
+        it 'should download a content which is referenced by the uri' do
           md5, path = File.read(self.uri.pathmap('%X.md5')).split(/\s+/)
-          expect(Digest::MD5.hexdigest(File.read self.save_to)).to eq(md5)
-        end
-        
-        it 'should be completed' do
-          expect(self.instance.completed?).to be_truthy
+          expect(Digest::MD5.hexdigest(self.out.read)).to eq(md5)
         end
       end
       
-      context 'when the uri scheme was http or https' do
+      context 'when the uri scheme was "http" or "https"' do
         let(:before_callback){->{
           response = File.read(self.response_path)
           stub_request(:head, 'www.example.com').to_return(headers: {
@@ -111,16 +99,13 @@ module Firebrew
           })
           stub_request(:get, 'www.example.com').to_return(body: response)
         }}
+        
         let(:uri){'http://www.example.com'}
         let(:response_path){'./spec/fixtures/firefox/extension/unpack_false.xpi'}
         
-        it 'should download a file which is referenced by the uri to the save_to' do
+        it 'should download a content which is referenced by the uri' do
           md5, path = File.read(self.response_path.pathmap('%X.md5')).split(/\s+/)
-          expect(Digest::MD5.hexdigest(File.read self.save_to)).to eq(md5)
-        end
-        
-        it 'should be completed' do
-          expect(self.instance.completed?).to be_truthy
+          expect(Digest::MD5.hexdigest(self.out.read)).to eq(md5)
         end
         
         context 'when the response status code was 302' do
@@ -138,9 +123,9 @@ module Firebrew
           let(:uri){'http://www.example.com'}
           let(:response_path){'./spec/fixtures/firefox/extension/unpack_false.xpi'}
           
-          it 'should download a file which is referenced by the uri to the save_to' do
+          it 'should download a content which is referenced by the uri' do
             md5, path = File.read(self.response_path.pathmap('%X.md5')).split(/\s+/)
-            expect(Digest::MD5.hexdigest(File.read self.save_to)).to eq(md5)
+            expect(Digest::MD5.hexdigest(self.out.read)).to eq(md5)
           end
         end
       end
