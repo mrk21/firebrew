@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.0](https://github.com/mrk21/firebrew/tree/v0.3.0) - 2014-09-30
+
+* Future [#36](https://github.com/mrk21/firebrew/issues/36): Implement the `os` gem
+* Future [#18](https://github.com/mrk21/firebrew/issues/18): Make it possible to display a download progress of the extension
+
 ## [0.2.0](https://github.com/mrk21/firebrew/tree/v0.2.0) - 2014-08-31
 
 * Future [#35](https://github.com/mrk21/firebrew/issues/35): Add the subcommand help
