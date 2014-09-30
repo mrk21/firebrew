@@ -84,7 +84,7 @@ module Firebrew::Firefox
       end
       
       def uninstall(extension)
-        FileUtils.rm_rf extension.uri
+        FileUtils.rm_r extension.uri
         self.remove(extension)
         self.push
       end

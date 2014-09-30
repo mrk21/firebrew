@@ -7,7 +7,7 @@ module Firebrew::Firefox
     let(:manager) do
       Extension::Manager.new(
         profile: Profile.new(
-          path: File.join(Dir.pwd, 'tmp')
+          path: './tmp'
         )
       )
     end
@@ -17,13 +17,13 @@ module Firebrew::Firefox
         name: 'Japanese Language Pack',
         guid: 'langpack-ja@firefox.mozilla.org',
         version: '30.0',
-        uri: File.join(Dir.pwd, 'tmp/extensions/langpack-ja@firefox.mozilla.org.xpi')
+        uri: './tmp/extensions/langpack-ja@firefox.mozilla.org.xpi'
       }, self.manager),
       Extension.new({
         name: 'Vimperator',
         guid: 'vimperator@mozdev.org',
         version: '3.8.2',
-        uri: File.join(Dir.pwd, 'tmp/extensions/vimperator@mozdev.org.xpi')
+        uri: './tmp/extensions/vimperator@mozdev.org.xpi'
       }, self.manager)
     ]}
     
@@ -106,14 +106,14 @@ module Firebrew::Firefox
         it 'should copy the `path/to/profile/extensions/<GUID>.xpi`' do
           subject
           md5, path = File.read(self.extension_uri.pathmap('%X.md5')).split(/\s+/)
-          expect(Digest::MD5.hexdigest(File.read self.expected_path)).to eq(md5)
+          expect(Digest::MD5.hexdigest(File.open(self.expected_path,'rb').read)).to eq(md5)
         end
         
         it 'should add the `extension` extension' do
           subject
           all = self.instance.all
           extension = self.extension
-          extension.uri = File.join(Dir.pwd, 'tmp/extensions/hoge@example.org.xpi')
+          extension.uri = './tmp/extensions/hoge@example.org.xpi'
           expect(all.size).to eq(3)
           expect(all[0]).to eq(self.extensions[0])
           expect(all[1]).to eq(self.extensions[1])
@@ -149,14 +149,14 @@ module Firebrew::Firefox
           it 'should copy the `path/to/profile/extensions/<GUID>.xpi`' do
             subject
             md5, path = File.read(self.extension_uri.pathmap('%X.md5')).split(/\s+/)
-            expect(Digest::MD5.hexdigest(File.read self.expected_path)).to eq(md5)
+            expect(Digest::MD5.hexdigest(File.open(self.expected_path,'rb').read)).to eq(md5)
           end
           
           it 'should add the `extension` extension' do
             subject
             all = self.instance.all
             extension = self.extension
-            extension.uri = File.join(Dir.pwd, 'tmp/extensions/hoge@example.org.xpi')
+            extension.uri = './tmp/extensions/hoge@example.org.xpi'
             expect(all.size).to eq(3)
             expect(all[0]).to eq(self.extensions[0])
             expect(all[1]).to eq(self.extensions[1])
@@ -197,7 +197,7 @@ module Firebrew::Firefox
             subject
             all = self.instance.all
             extension = self.extension
-            extension.uri = File.join(Dir.pwd, 'tmp/extensions/hoge@example.org')
+            extension.uri = './tmp/extensions/hoge@example.org'
             expect(all.size).to eq(3)
             expect(all[0]).to eq(self.extensions[0])
             expect(all[1]).to eq(self.extensions[1])
@@ -210,7 +210,7 @@ module Firebrew::Firefox
         let(:extension) do
           Extension.new({
             guid: 'hoge@example.org',
-            uri: File.join(Dir.pwd, 'tmp/extensions/hoge@example.org.xpi')
+            uri: './tmp/extensions/hoge@example.org.xpi'
           }, self.manager)
         end
         
@@ -240,7 +240,7 @@ module Firebrew::Firefox
           let(:extension) do
             Extension.new({
               guid: 'hoge@example.org',
-              uri: File.join(Dir.pwd, 'tmp/extensions/hoge@example.org')
+              uri: './tmp/extensions/hoge@example.org'
             }, self.manager)
           end
           

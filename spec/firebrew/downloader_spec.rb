@@ -2,6 +2,7 @@ require 'spec_helper'
 require 'stringio'
 require 'digest/md5'
 require 'webmock/rspec'
+require 'os'
 
 module Firebrew
   describe Downloader do
@@ -39,14 +40,24 @@ module Firebrew
       end
       
       context 'when the uri scheme was "file"' do
-        let(:uri){'file:///a/b.html'}
-        let(:expected_uri){URI.parse('file:///a/b.html')}
+        if OS.windows? then
+          let(:uri){'file:///C:/a/b.html'}
+          let(:expected_uri){URI.parse('file:///C:/a/b.html')}
+        else
+          let(:uri){'file:///a/b.html'}
+          let(:expected_uri){URI.parse('file:///a/b.html')}
+        end
         it { is_expected.to eq(self.expected_uri) }
       end
       
       context 'when the uri scheme was empty' do
-        let(:uri){'/a/b.html'}
-        let(:expected_uri){URI.parse('file:///a/b.html')}
+        if OS.windows? then
+          let(:uri){'C:/a/b.html'}
+          let(:expected_uri){URI.parse('file:///C:/a/b.html')}
+        else
+          let(:uri){'/a/b.html'}
+          let(:expected_uri){URI.parse('file:///a/b.html')}
+        end
         
         it 'should convert a file scheme' do
           is_expected.to eq(self.expected_uri)
@@ -54,7 +65,12 @@ module Firebrew
         
         context 'when the path was relative' do
           let(:uri){'./a/b.html'}
-          let(:expected_uri){URI.parse("file://#{Dir.pwd}/a/b.html")}
+          
+          if OS.windows? then
+            let(:expected_uri){URI.parse("file:///#{Dir.pwd}/a/b.html")}
+          else
+            let(:expected_uri){URI.parse("file://#{Dir.pwd}/a/b.html")}
+          end
           
           it 'should be an absolute path from the current dir' do
             is_expected.to eq(self.expected_uri)
@@ -93,7 +109,7 @@ module Firebrew
       
       context 'when the uri scheme was "http" or "https"' do
         let(:before_callback){->{
-          response = File.read(self.response_path)
+          response = File.open(self.response_path, 'rb').read
           stub_request(:head, 'www.example.com').to_return(headers: {
             'Content-Length'=> response.size
           })
@@ -110,7 +126,7 @@ module Firebrew
         
         context 'when the response status code was 302' do
           let(:before_callback){->{
-            response = File.read(self.response_path)
+            response = File.open(self.response_path, 'rb').read
             stub_request(:head, 'www.example.com').to_return(status: 302, headers: {
               'Location'=> 'http://dl.example.com/'
             })

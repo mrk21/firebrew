@@ -18,7 +18,12 @@ module Firebrew
         # do nothing
       when nil then
         uri.scheme = 'file'
-        uri.path = File.expand_path(uri.path)
+        path = File.expand_path(uri.path)
+        path = "/#{path}" if path =~ /^[a-zA-Z]:/
+        uri.path = path
+      when /^[a-zA-Z]$/ then
+        uri.path = "/#{uri.scheme.upcase}:#{uri.path}"
+        uri.scheme = 'file'
       else
         raise Firebrew::NetworkError, "Don't support the scheme: #{uri.scheme}"
       end
@@ -82,7 +87,8 @@ module Firebrew
     end
     
     def file_connection(&block)
-      open(URI.decode(@uri.path, 'rb'), &block)
+      path = @uri.path.gsub(%r{/([a-zA-Z]:)},'\1')
+      open(URI.decode(path), &block)
     end
     
     def create_progress_bar
